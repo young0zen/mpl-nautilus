@@ -275,9 +275,8 @@ static void ompgauss() {
 #define TIME() (double)nk_sched_get_realtime();
 static int handle_omptest (char * buf, void * priv)
 {
-    setenv("OMP_WHATEVER","53");
+  //    setenv("OMP_WHATEVER","53");
     int seed, size, np;
-
 
 #if 0 // BUG
     nk_vc_printf("Initializing\n");
@@ -314,7 +313,7 @@ static int handle_omptest (char * buf, void * priv)
 
     reset_inputs();
     check_state(0);
-    serialgauss();
+    ompgauss();
     check_state(1);
 
     float diff2 = 0.0;
@@ -343,9 +342,9 @@ static int handle_omptest (char * buf, void * priv)
     nk_vc_printf("seed %d, size, %d, nprocs: %d\n", seed, N, procs);
     
     
-    //initialize_inputs();
+    initialize_inputs();
     reset_inputs();
-    nk_vc_printf("state before openmp run\n");
+    //nk_vc_printf("state before openmp run\n");
     //print_state();
 
     //unsigned mxcsr;
@@ -367,12 +366,13 @@ static int handle_omptest (char * buf, void * priv)
    
  
     double start = TIME();
+    reset_inputs();
     ompgauss();
     double  end = TIME();
     nk_vc_printf("state after openmp run\n");
     //print_state();
-    double  omp = end-start;
-    nk_vc_printf("openmp done %lf\n", omp);
+    //    double  omp = end-start;
+    nk_vc_printf("openmp done \n");
     float OMP[N];
     /* float *OMP; */
     /* OMP = ALLOC(N * sizeof(float)); */
