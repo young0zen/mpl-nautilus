@@ -1,0 +1,36 @@
+LOG2_HI = float.fromhex('0x1.62e42fee00000p-1')
+LOG2_LOW = float.fromhex('0x1.a39ef35793c76p-33')
+L1 = float.fromhex('0x1.5555555555593p-1')
+L2 = float.fromhex('0x1.999999997fa04p-2')
+L3 = float.fromhex('0x1.2492494229359p-2')
+L4 = float.fromhex('0x1.c71c51d8e78afp-3')
+L5 = float.fromhex('0x1.7466496cb03dep-3')
+L6 = float.fromhex('0x1.39a09d078c69fp-3')
+L7 = float.fromhex('0x1.2f112df3e5244p-3')
+SQRT2_HALF = float.fromhex('0x1.6a09e667f3bcdp-1')
+CTX = mpmath.MPContext()
+CTX.prec = 200  # Bits vs. default of 53
+
+
+def log_mpf(x):
+    return CTX.log(CTX.mpf(x))
+
+
+def log_ieee754(x):
+    f1, ki = np.frexp(x)
+    if f1 < SQRT2_HALF:
+        f1 *= 2
+        ki -= 1
+    f = f1 - 1
+    k = float(ki)
+
+    s = f / (2 + f)
+    s2 = s * s
+    s4 = s2 * s2
+    # Terms with odd powers of s^2.
+    t1 = s2 * (L1 + s4 * (L3 + s4 * (L5 + s4 * L7)))
+    # Terms with even powers of s^2.
+    t2 = s4 * (L2 + s4 * (L4 + s4 * L6))
+    R = t1 + t2
+    hfsq = 0.5 * f * f
+    return k * LOG2_HI - ((hfsq - (s * (hfsq + R) + k * LOG2_LOW)) - f)

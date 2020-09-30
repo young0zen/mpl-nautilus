@@ -223,6 +223,10 @@ vfprintf (FILE * stream, const char * format, va_list arg)
     UNDEF_FUN_ERR();
     return -1;
 #else
+    //mjc
+  //  return vprintk(format,arg);
+
+
     if (stream!=stdout && stream!=stderr) { return 0; BOGUS(); }
     return vprintk(format,arg);
 #endif
@@ -957,4 +961,10 @@ GEN_UNDEF(int,times,0)
 GEN_UNDEF(int,unsetenv,0)
 GEN_UNDEF(int,vfscanf,0)
 
-	  
+
+
+
+
+GEN_UNDEF(int,__isoc99_sscanf,0)
+GEN_UNDEF(int,__isoc99_vfscanf,0)
+GEN_UNDEF(int,__isoc99_fscanf,0)	

@@ -120,9 +120,9 @@ double ldexp(double x, int exp)
     return f.d;
 }
 
-GEN_UNDEF(double,sin,0.0)
+//GEN_UNDEF(double,sin,0.0)
 GEN_UNDEF(double,sinh,0.0)
-GEN_UNDEF(double,cos,0.0)
+//GEN_UNDEF(double,cos,0.0)
 GEN_UNDEF(double,cosh,0.0)
 GEN_UNDEF(double,tan,0.0)
 GEN_UNDEF(double,tanh,0.0)
