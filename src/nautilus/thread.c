@@ -62,7 +62,7 @@ extern void nk_thread_switch(nk_thread_t*);
 extern void nk_thread_entry(void *);
 static struct nk_tls tls_keys[TLS_MAX_KEYS];
 
-
+static void * nk_thread_set_tls(int placement_cpu);
 /****** SEE BELOW FOR EXTERNAL THREAD INTERFACE ********/
 
 
@@ -323,7 +323,7 @@ nk_thread_create (nk_thread_fun_t fun,
 	// we have succeeded in reanimating a dead thread, so
 	// now all we need to do is the management that
 	// nk_thread_destroy() would otherwise have done
-
+        printf("!!!!!!!!!!ATTENTION skip creation\n");
 	nk_thread_brain_wipe(t);
 
 	
@@ -369,10 +369,10 @@ nk_thread_create (nk_thread_fun_t fun,
     t->aspace = get_cur_thread()->aspace;
 
     // a thread joins its creator's HW TLS space
-    void* tlsadd = (void*) malloc(16);
-    t->hwtls = tlsadd;//get_cur_thread()->hwtls;
-    //t->hwtls = get_cur_thread()->hwtls;
-    
+    // void* tlsadd = (void*) malloc(1024*100);
+    //t->hwtls = tlsadd;//get_cur_thread()->hwtls;
+    t->hwtls = nk_thread_set_tls(placement_cpu);// get_cur_thread()->hwtls;
+    printf("hwtls return %p %08x \n", t->hwtls, t->hwtls); 
     t->fun = fun;
     t->input = input;
     t->output_loc = output;
@@ -500,7 +500,7 @@ int nk_thread_run(nk_thread_id_t t)
       THREAD_DEBUG("Running thread (%p, tid=%u) on bound cpu %u\n", newthread, newthread->tid, newthread->current_cpu); 
   }
 #endif
-
+ 
   nk_sched_kick_cpu(newthread->current_cpu);
 
   return 0;
@@ -520,10 +520,75 @@ int nk_thread_name(nk_thread_id_t tid, char *name)
   return 0;
 }
 
+uint64_t round(uint64_t offset, uint64_t align)
+{
+    if (align == 0 || align == 1)
+        return offset;
+    
+    return offset + align - offset % align;
+}
+
+
+static void* nk_thread_set_tls(int placement_cpu)
+{
+#if 1
+  //mjc
+    void * tls_loc;
+    extern addr_t _tbss_end, _tdata_start,_tdata_end;
+    addr_t tdata_start = (addr_t) &_tdata_start;
+    addr_t tdata_end = (addr_t) &_tdata_end;
+    addr_t tbss_end = (addr_t) &_tbss_end;
+    uint64_t datasize = tdata_end-tdata_start;
+    //tbss follows closely after tdata;
+    uint64_t bsssize = tbss_end-tdata_end;
+    //nk_dump_mem(tdata_start, datasize+bsssize);
+    printf("========size tdata  %d tbss  %d\n",datasize, bsssize);
+   // printf("====+++++======= tdata start %04x tdata end %04x \n", tdata_start, tdata_end);
+    int* tmp = tdata_start;
+    while(tmp < tbss_end){
+     //printf("addr %p value %d\n",tmp, *tmp);
+     tmp += 1;
+    }
+
+
+    
+    //malloc problem: increment tls_loc gives error fs;
+    uint64_t align = 16;
+    tls_loc = malloc_specific(datasize+bsssize, placement_cpu);
+    printf("=======tls loc %p \n", tls_loc);
+    memset(tls_loc, 0, datasize+bsssize);
+
+    /*
+     * -------------------------------------------------------
+     *  |  |  |  |  | tdata | tdata | tdata | tbss |tbss|tcb|  
+     * ------------------------------------------------------
+    */
+    memcpy(tls_loc, tdata_start, datasize);
+    //this is not correct
+  //  return tls_loc;
+    printf("hwtls : %p \n", tls_loc+datasize+bsssize);  
+    return  tls_loc + datasize + bsssize;
+#endif
+
+}
+
 int nk_thread_change_hw_tls(nk_thread_id_t tid, void *hwtls)
 {
+    printf("========hwtls relo: %p", hwtls);
     ((nk_thread_t*)tid)->hwtls = hwtls;
-    msr_write(MSR_FS_BASE,(uint64_t)hwtls);
+    uint64_t fsbase = (uint64_t)hwtls;
+    msr_write(MSR_FS_BASE, fsbase);
+
+#if 1 //force fs:0x0 to have value fsbase
+    asm volatile("push %rax");
+    asm volatile(
+              "movq %0, %%rax;"
+               :
+               :"r" (fsbase)
+               );
+    asm volatile("movq %rax, (%rax)");
+    asm volatile( "pop %rax" );
+#endif
     return 0;
 }
 
