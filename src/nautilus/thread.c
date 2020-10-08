@@ -540,19 +540,15 @@ static void* nk_thread_set_tls(int placement_cpu)
     //tbss follows closely after tdata;
     uint64_t bsssize = tbss_end-tdata_end;
     //nk_dump_mem(tdata_start, datasize+bsssize);
-    //printf("========size tdata  %d tbss  %d\n",datasize, bsssize);
-   // printf("====+++++======= tdata start %04x tdata end %04x \n", tdata_start, tdata_end);
-//    int* tmp = tdata_start;
-//    while(tmp < tbss_end){
-     //printf("addr %p value %d\n",tmp, *tmp);
-//     tmp += 1;
-//    }
+   //  printf("========size tdata  %d tbss  %d\n",datasize, bsssize);
+    // printf("====+++++======= tdata start %04x tdata end %04x \n", tdata_start, tdata_end);
 
 
     
     //malloc problem: increment tls_loc gives error fs;
  //   uint64_t align = 16;
-    tls_loc = malloc_specific(datasize+bsssize, placement_cpu);
+    uint64_t slack = 64;
+    tls_loc = malloc_specific(datasize+bsssize+slack, placement_cpu);
  //   printf("=======tls loc %p \n", tls_loc);
     memset(tls_loc, 0, datasize+bsssize);
 
@@ -562,9 +558,7 @@ static void* nk_thread_set_tls(int placement_cpu)
      * ------------------------------------------------------
     */
     memcpy(tls_loc, tdata_start, datasize);
-    //this is not correct
-  //  return tls_loc;
- //   printf("hwtls : %p \n", tls_loc+datasize+bsssize); 
+  // printf("hwtls : %p \n", tls_loc+datasize+bsssize); 
 
    uint64_t fsbase = tls_loc+datasize+bsssize;
 
@@ -573,8 +567,8 @@ static void* nk_thread_set_tls(int placement_cpu)
     asm volatile(
               "movq %0, %%rax;"
                :
-               :"r" (fsbase)
-               );
+               :"m" (fsbase)
+               :"memory");
     asm volatile("movq %rax, (%rax)");
     asm volatile( "pop %rax" );
 #endif
