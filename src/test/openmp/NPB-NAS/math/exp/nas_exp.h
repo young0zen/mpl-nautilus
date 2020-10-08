@@ -1,9 +1,8 @@
 
-
 #ifndef _NAS_EXP_H_
 #define _NAS_EXP_H_
 
-static double
+static      double
 one	= 1.0,
 halF[2]	= {0.5,-0.5,},
 huge	= 1.0e+300,
@@ -21,24 +20,22 @@ P3   =  6.61375632143793436117e-05, /* 0x3F11566A, 0xAF25DE2C */
 P4   = -1.65339022054652515390e-06, /* 0xBEBBBD41, 0xC5D26BF1 */
 P5   =  4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
 
-static union {double d; long long u;} _x, _y;
-
-#define __HI(a) a.u >> 32
-#define __LO(a) a.u <<32>>32
+//static union {double d; long long u;} _x, _y;
+#define __HI(x) *(1+(int*)&x)
+#define __LO(x) *(int*)&x
 
 static double exp(double x)	/* default IEEE double exp */
 {
 	double y,hi,lo,c,t;
 	int k,xsb;
 	unsigned hx;
-        _x.d = x;
-	hx  = __HI(_x);	/* high word of x */
+	hx  = __HI(x);	/* high word of x */
 	xsb = (hx>>31)&1;		/* sign bit of x */
 	hx &= 0x7fffffff;		/* high word of |x| */
     /* filter out non-finite argument */
 	if(hx >= 0x40862E42) {			/* if |x|>=709.78... */
             if(hx>=0x7ff00000) {
-		if(((hx&0xfffff)|__LO(_x))!=0) 
+		if(((hx&0xfffff)|__LO(x))!=0) 
 		     return x+x; 		/* NaN */
 		else return (xsb==0)? x:0.0;	/* exp(+-inf)={inf,0} */
 	    }
@@ -68,19 +65,15 @@ static double exp(double x)	/* default IEEE double exp */
 	c  = x - t*(P1+t*(P2+t*(P3+t*(P4+t*P5))));
 	if(k==0) 	return one-((x*c)/(c-2.0)-x); 
 	else 		y = one-((lo-(x*c)/(2.0-c))-hi);
-	_y.d = y;
+	
 	if(k >= -1021) {
-	    long long _t = __HI(_y);
-	    _t	 += (k<<20);	/* add k to y's exponent */
-	    _y.u = _t << 32 | __LO(_y); 
-	    return _y.d;
+	    __HI(y) += (k<<20);	/* add k to y's exponent */
+	    return y;
 	} else {
-	   long long _t = __HI(_y);
-	    _t += ((k+1000)<<20);/* add k to y's exponent */
-	    _y.u = _t << 32 | __LO(_y);
-	    
-	    return _y.d*twom1000;
+	    __HI(y) += ((k+1000)<<20);/* add k to y's exponent */
+	    return y*twom1000;
 	}
+	
 }
 
 #endif

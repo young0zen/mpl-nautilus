@@ -1,4 +1,4 @@
-CFLAGS += -O3 -I ../common -fnoopenmp-use-tls
+CFLAGS += -O3 -I ../common 
 
 OBJS =	lu.o \
 

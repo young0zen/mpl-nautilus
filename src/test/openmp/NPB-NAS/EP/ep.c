@@ -36,6 +36,10 @@
 #include "npbparams.h"
 #include "../math/nas_math.h"
 /* parameters */
+#include<nautilus/nautilus.h>
+#include<nautilus/shell.h>
+#include<nautilus/libccompat.h>
+
 #define	MK		16
 #define	MM		(M - MK)
 #define	NN		(1 << MM)
@@ -64,9 +68,6 @@ c   numbers.  MK is the Log_2 of the size of each batch of uniform random
 c   numbers.  MK can be set for convenience on a given system, since it does
 c   not affect the results.
 */
-#include<nautilus/nautilus.h>
-#include<nautilus/shell.h>
-#include<nautilus/libccompat.h>
 
 static int program_EP(char *buf, void* priv);
 
@@ -78,8 +79,8 @@ static struct shell_cmd_impl nas_ep_impl = {
 nk_register_shell_cmd(nas_ep_impl);
 
 
-
 int program_EP(char *buf, void* priv) {
+
 
     double Mops, t1, t2, t3, t4, x1, x2, sx, sy, tm, an, tt, gc;
     double dum[3] = { 1.0, 1.0, 1.0 };
@@ -100,7 +101,7 @@ c   point print statement (internal file)
 	   " - EP Benchmark\n");
     sprintf(size, "%12.0f",  pow(2.0, M+1));
     for (j = 13; j >= 1; j--) {
-	if (size[j] == '.') size[j] = ' ';
+   	if (size[j] == '.') size[j] = ' ';
     }
     printf(" Number of random numbers generated: %13s\n", size);
 
@@ -121,20 +122,22 @@ c   sure these initializations cannot be eliminated as dead code.
 */
     vranlc(0, &(dum[0]), dum[1], &(dum[2]));
     dum[0] = randlc(&(dum[1]), dum[2]);
-    
+
+
 #pragma omp parallel for default(shared) private(i)
-    for (i = 0; i < 2*NK; i++) x[i] = -1.0e99;
-    
-    Mops = 0.0;//log(sqrt(fabs(max(1.0, 1.0))));
+     for (i = 0; i < 2*NK; i++) x[i] = -1.0e99;
+  
+    Mops = log(sqrt(fabs(max(1.0, 1.0))));
 
     timer_clear(1);
     timer_clear(2);
     timer_clear(3);
     timer_start(1);
-
     vranlc(0, &t1, A, x);
+   
 
-/*   Compute AN = A ^ (2 * NK) (mod 2^46). */
+
+    /*   Compute AN = A ^ (2 * NK) (mod 2^46). */
 
     t1 = A;
 
@@ -161,7 +164,8 @@ c   have more numbers to generate than others
 
 #pragma omp parallel copyin(x)
 {
-    double t1, t2, t3, t4, x1, x2;
+
+	double t1, t2, t3, t4, x1, x2;
     int kk, i, ik, l;
     double qq[NQ];		/* private copy of q[0:NQ-1] */
 
@@ -220,7 +224,10 @@ c       vectorizable.
 #pragma omp master
     nthreads = omp_get_num_threads();
 #endif /* _OPENMP */    
+
+
 } /* end of parallel region */    
+
 
     for (i = 0; i <= NQ-1; i++) {
         gc = gc + q[i];

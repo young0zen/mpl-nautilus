@@ -1,11 +1,12 @@
 
-CFLAGS += -fopenmp -Iinclude/rt/openmp -fnoopenmp-use-tls
+CFLAGS += -o3 -fopenmp -Iinclude/rt/openmp
+#-fnoopenmp-use-tls
 obj-y += math/
 obj-y += common/\
 	rand/
 #EP and MG conflicts with others
 
-obj-y += \
+#obj-y += \
          BT/\
 	 SP/\
 	 LU/\
@@ -27,7 +28,7 @@ obj-y += \
          rand/\
 	 BT/
 
-#obj-y += common/\
+obj-y += common/\
 	rand/\
 	EP/
 

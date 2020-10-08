@@ -1,4 +1,4 @@
-CFLAGS += -o3 -I ../common -fnoopenmp-use-tls
+CFLAGS += -o3 -I ../common
 
 OBJS =	mg.o \
 

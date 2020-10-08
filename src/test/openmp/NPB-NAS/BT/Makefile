@@ -5,12 +5,12 @@
 #include ../config/make.def
 
 #CFLAGS = -o3 -I ../common
-CFLAGS += -I ../common -fnoopenmp-use-tls
+CFLAGS += -o3 -I ../common 
+#-fnoopenmp-use-tls
 
 
 
 OBJS =	bt.o \
-	toy.o
 #	${COMMON}/c_print_results.o ${COMMON}/c_timers.o ${COMMON}/c_wtime.o
 
 #include ../sys/make.common

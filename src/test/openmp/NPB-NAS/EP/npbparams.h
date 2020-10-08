@@ -4,8 +4,8 @@ c  This file is generated automatically by the setparams utility.
 c  It sets the number of processors and the class of the NPB
 c  in this directory. Do not modify it by hand.
 */
-#define	CLASS	 'S'
-#define	M	24
+#define	CLASS	 'B'
+#define	M	30
 #define	CONVERTDOUBLE	FALSE
 #define COMPILETIME "27 Sep 2020"
 #define NPBVERSION "3.0 structured"
