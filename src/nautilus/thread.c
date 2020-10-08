@@ -372,7 +372,6 @@ nk_thread_create (nk_thread_fun_t fun,
     // void* tlsadd = (void*) malloc(1024*100);
     //t->hwtls = tlsadd;//get_cur_thread()->hwtls;
     t->hwtls = nk_thread_set_tls(placement_cpu);// get_cur_thread()->hwtls;
-    printf("hwtls return %p %08x \n", t->hwtls, t->hwtls); 
     t->fun = fun;
     t->input = input;
     t->output_loc = output;
@@ -531,7 +530,6 @@ uint64_t round(uint64_t offset, uint64_t align)
 
 static void* nk_thread_set_tls(int placement_cpu)
 {
-#if 1
   //mjc
     void * tls_loc;
     extern addr_t _tbss_end, _tdata_start,_tdata_end;
@@ -542,20 +540,20 @@ static void* nk_thread_set_tls(int placement_cpu)
     //tbss follows closely after tdata;
     uint64_t bsssize = tbss_end-tdata_end;
     //nk_dump_mem(tdata_start, datasize+bsssize);
-    printf("========size tdata  %d tbss  %d\n",datasize, bsssize);
+    //printf("========size tdata  %d tbss  %d\n",datasize, bsssize);
    // printf("====+++++======= tdata start %04x tdata end %04x \n", tdata_start, tdata_end);
-    int* tmp = tdata_start;
-    while(tmp < tbss_end){
+//    int* tmp = tdata_start;
+//    while(tmp < tbss_end){
      //printf("addr %p value %d\n",tmp, *tmp);
-     tmp += 1;
-    }
+//     tmp += 1;
+//    }
 
 
     
     //malloc problem: increment tls_loc gives error fs;
-    uint64_t align = 16;
+ //   uint64_t align = 16;
     tls_loc = malloc_specific(datasize+bsssize, placement_cpu);
-    printf("=======tls loc %p \n", tls_loc);
+ //   printf("=======tls loc %p \n", tls_loc);
     memset(tls_loc, 0, datasize+bsssize);
 
     /*
@@ -566,20 +564,32 @@ static void* nk_thread_set_tls(int placement_cpu)
     memcpy(tls_loc, tdata_start, datasize);
     //this is not correct
   //  return tls_loc;
-    printf("hwtls : %p \n", tls_loc+datasize+bsssize);  
-    return  tls_loc + datasize + bsssize;
+ //   printf("hwtls : %p \n", tls_loc+datasize+bsssize); 
+
+   uint64_t fsbase = tls_loc+datasize+bsssize;
+
+#if 1 //force fs:0x0 to have value fsbase
+    asm volatile("push %rax");
+    asm volatile(
+              "movq %0, %%rax;"
+               :
+               :"r" (fsbase)
+               );
+    asm volatile("movq %rax, (%rax)");
+    asm volatile( "pop %rax" );
 #endif
+  
+    return  tls_loc + datasize + bsssize;
 
 }
 
 int nk_thread_change_hw_tls(nk_thread_id_t tid, void *hwtls)
 {
-    printf("========hwtls relo: %p", hwtls);
     ((nk_thread_t*)tid)->hwtls = hwtls;
     uint64_t fsbase = (uint64_t)hwtls;
     msr_write(MSR_FS_BASE, fsbase);
 
-#if 1 //force fs:0x0 to have value fsbase
+#if 0 //force fs:0x0 to have value fsbase
     asm volatile("push %rax");
     asm volatile(
               "movq %0, %%rax;"

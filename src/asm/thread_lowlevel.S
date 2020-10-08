@@ -159,7 +159,7 @@ continue_context_switch:
 	
     wrmsr                   // actually change fsbase
 
-    movq %rax, (%rax)  	    // explicitly set fs:0x0 to fs base
+//    movq %rax, (%rax)  	    // explicitly set fs:0x0 to fs base
     pop %rcx                // restore regs we have usd
     pop %rdx
     pop %rax
