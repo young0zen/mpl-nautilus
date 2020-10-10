@@ -800,12 +800,12 @@ unsigned long getppid(void)
 
 
 #define suseconds_t uint64_t
-struct timeval {
-    time_t      tv_sec;     /* seconds */
-    suseconds_t tv_usec;    /* microseconds */
-};
+//struct timeval {
+//    time_t      tv_sec;     /* seconds */
+//    suseconds_t tv_usec;    /* microseconds */
+//};
 
-struct timezone;
+//struct timezone;
 
 int gettimeofday(struct timeval *tv, struct timezone *tz_ignored)
 {

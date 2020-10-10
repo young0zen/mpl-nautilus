@@ -26,12 +26,12 @@
 #define DEBUG(fmt, args...) DEBUG_PRINT("sysconf: " fmt, ##args)
 #endif
 
-#define _SC_EQUIV_CLASS_MAX -1
+//#define _SC_EQUIV_CLASS_MAX -1
 
-#define _SC_THREADS 67
-#define _SC_THREAD_THREADS_MAX 76
-#define _SC_THREAD_STACK_MIN 75
-
+//#define _SC_THREADS 67
+//#define _SC_THREAD_THREADS_MAX 76
+//#define _SC_THREAD_STACK_MIN 75
+//#define _SC_NPROCESSORS_ONLN 80
 
 long int
 __sysconf (int name)
@@ -51,6 +51,9 @@ __sysconf (int name)
     case _SC_THREAD_STACK_MIN:
    DEBUG("sc_thread_stack_min %d\n", name);    
       return 0x4000;
+    case _SC_NPROCESSORS_ONLN:
+   DEBUG("sc_nprocessors_onln \n");
+      return (long) nk_get_num_cpus();
     case 84:
    DEBUG("unknown %d\n", name);    
       return 8;
