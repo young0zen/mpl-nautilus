@@ -256,8 +256,8 @@ time_t time(time_t * timer);
 double difftime(time_t time1, time_t time2);
 void *memchr(const void *str, int c, size_t n);
 double fabs(double __x);
-double atan(double __x);
-double atan2(double y, double x);
+/* double atan(double __x); */
+/* double atan2(double y, double x); */
 double fmodnew(int y, int x); //dupe for test
 double modf(double y, double *x);
 double fmod(double y, double x);
@@ -265,14 +265,16 @@ double fmod(double y, double x);
 double frexp(double x, int *e);
 double ldexp(double x, int exp);
 double strtod(const char *str, char **endptr);
-double sin(double x);
-double sinh(double x);
-double cos(double x);
-double cosh(double x);
-double tan(double x);
-double tanh(double x);
-double asin(double x);
-double acos(double x);
+
+
+/* double sin(double x); */
+/* double sinh(double x); */
+/* double cos(double x); */
+/* double cosh(double x); */
+/* double tan(double x); */
+/* double tanh(double x); */
+/* double asin(double x); */
+/* double acos(double x); */
 double ceil(double x);
 double floor(double x);
 double sqrt(double x);
