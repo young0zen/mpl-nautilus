@@ -1,4 +1,4 @@
-
+LDFLAGS += --allow-multiple-definition
 CFLAGS += -o3 -fopenmp -Iinclude/rt/openmp
 #-fnoopenmp-use-tls
 obj-y += math/
@@ -6,16 +6,15 @@ obj-y += common/\
 	rand/
 #EP and MG conflicts with others
 
-#obj-y += \
-         BT/\
+obj-y += \
 	 SP/\
 	 LU/\
 	 IS/\
 	 FT/\
-         CG/
-#        EP/
-#        MG/
-
+         CG/\
+         EP/\
+         MG/\
+        BT/
 #obj-y+= common/\
 	rand/\
 	FT/
@@ -28,7 +27,7 @@ obj-y += common/\
          rand/\
 	 BT/
 
-obj-y += common/\
+#obj-y += common/\
 	rand/\
 	EP/
 
