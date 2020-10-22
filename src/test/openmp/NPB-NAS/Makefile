@@ -1,5 +1,5 @@
 LDFLAGS += --allow-multiple-definition
-CFLAGS += -o3 -fopenmp -Iinclude/rt/openmp
+CFLAGS += -O3 -fopenmp -Iinclude/rt/openmp
 #-fnoopenmp-use-tls
 obj-y += math/
 obj-y += common/\
