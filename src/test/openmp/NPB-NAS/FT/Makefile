@@ -1,2 +1,2 @@
-OBJS =	ft.o \
+OBJS =	ft.o
 obj-y += $(OBJS)

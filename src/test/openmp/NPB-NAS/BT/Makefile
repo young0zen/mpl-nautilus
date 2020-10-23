@@ -1,2 +1,2 @@
-OBJS =	bt.o \
+OBJS =	bt.o
 obj-y +=$(OBJS)
