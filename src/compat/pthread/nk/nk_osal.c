@@ -343,8 +343,8 @@ pte_osResult pte_osSemaphoreDelete(pte_osSemaphoreHandle handle){
 pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){
 
     DEBUG("releaseosSemaphorePost\n");
-    
-    handle->flags = STATE_LOCK(&(handle->lock));
+    spin_lock(&(handle->lock));    
+    //handle->flags = STATE_LOCK(&(handle->lock));
     handle->count += count;
     if(handle->sleepcount > 0){
       // int old = pte_osAtomicAdd(&(handle->count), count);
@@ -357,8 +357,8 @@ pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){
 	nk_wait_queue_wake_one(handle->wait_queue);
       }
     }
-    
-    STATE_UNLOCK(&(handle->lock), handle->flags);
+    spin_unlock(&(handle->lock));
+    //STATE_UNLOCK(&(handle->lock), handle->flags);
     return PTE_OS_OK;
 }
 
@@ -381,14 +381,17 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
    if(pTimeout == NULL){
      while(1){
        DEBUG("osSemaphoreBusyWaitPend\n");
-       handle->flags = STATE_LOCK(&(handle->lock));
-       if(handle->count > 0){
+       spin_lock(&(handle->lock));
+       //handle->flags = STATE_LOCK(&(handle->lock));
+      if(handle->count > 0){
 	 handle->count--;
          //pte_osAtomicDecrement(&(handle->count));;
-     	 STATE_UNLOCK(&(handle->lock), handle->flags);
+	 spin_unlock(&(handle->lock));
+     	 //STATE_UNLOCK(&(handle->lock), handle->flags);
      	 return PTE_OS_OK;
        }else{
-     	 STATE_UNLOCK(&(handle->lock), handle->flags);
+	 spin_unlock(&(handle->lock));
+     	 //STATE_UNLOCK(&(handle->lock), handle->flags);
 	 busy_wait++;
 	 if(busy_wait > ZOMBIE){
            busy_wait=0;
@@ -401,11 +404,13 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
      // We are ZOMBIE NOW! GO to sleep!
      while(1){
        DEBUG("osSemaphoreSleepPend\n");
-       handle->flags = STATE_LOCK(&(handle->lock));
+       spin_lock(&(handle->lock));
+       // handle->flags = STATE_LOCK(&(handle->lock));
        if(handle->count > 0){
 	 handle->count--;
 	 //int ori =  pte_osAtomicDecrement(&(handle->count));
-     	 STATE_UNLOCK(&(handle->lock), handle->flags);
+	 spin_unlock(&(handle->lock));
+	 // STATE_UNLOCK(&(handle->lock), handle->flags);
      	 return PTE_OS_OK;
        }else{
         //we need to gracefully put ourselves to sleep
@@ -432,7 +437,7 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
         // and reenable preemption
         nk_sched_sleep(&(handle->lock));
 	DEBUG("thread wake up from sleep\n");
-	irq_enable_restore(handle->flags);
+	//irq_enable_restore(handle->flags);
 	
        }
      }

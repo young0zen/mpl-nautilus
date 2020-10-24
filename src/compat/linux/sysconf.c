@@ -55,7 +55,8 @@ __sysconf (int name)
    DEBUG("sc_nprocessors_onln \n");
       return (long) nk_get_num_cpus();
     case 84:
-   DEBUG("unknown %d\n", name);    
+      //important to set default number of threads
+      DEBUG("unknown but possibly related to number of cpu %d\n", name);    
       return (long) nk_get_num_cpus();
     default:
       DEBUG("name %d\n", name);
