@@ -56,7 +56,7 @@ __sysconf (int name)
       return (long) nk_get_num_cpus();
     case 84:
    DEBUG("unknown %d\n", name);    
-      return 8;
+      return (long) nk_get_num_cpus();
     default:
       DEBUG("name %d\n", name);
       return 0;
