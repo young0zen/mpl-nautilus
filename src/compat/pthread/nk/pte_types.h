@@ -19,8 +19,10 @@ struct psemaphore{
   nk_wait_queue_t  *wait_queue;
   uint8_t flags;
 };
+
 struct thread_with_signal{
   nk_thread_id_t tid;
+  uint8_t priority;
   uint8_t signal;
   // nk_wait_queue_t *in_queue;
 };

@@ -16,7 +16,7 @@
 #define RESTORE_UNIRQ(a,b) irq_enable_restore(b)
 
 
-#define ZOMBIE 200  //after busy wait for ZOMBIE time check condition
+#define ZOMBIE 500  //after busy wait for ZOMBIE time check condition
 #define ZOMBIE_mode true //Put to sleep if true after ZOMBIE time
 
 //retrive osHandle from thread
@@ -133,6 +133,8 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
 
   memset(handleobj,0,sizeof(struct thread_with_signal));
 
+  handleobj->priority = initialPriority;
+  
   int ret = nk_thread_create(entryPoint, argv, NULL, false,(nk_stack_size_t) stackSize, &(handleobj->tid),-1);
   if (ret != 0){
     ERROR("create error exit\n");
@@ -191,10 +193,11 @@ pte_osThreadHandle pte_osThreadGetHandle(void){
 }
 
 int pte_osThreadGetPriority(pte_osThreadHandle threadHandle){
-  return 0;
+  return threadHandle->priority;
 }
 
 pte_osResult pte_osThreadSetPriority(pte_osThreadHandle threadHandle, int newPriority){
+  threadHandle->priority = newPriority;
   return PTE_OS_OK;
 
 }
@@ -267,7 +270,7 @@ void pte_osThreadSleep(unsigned int msecs){
  * Returns the maximum allowable priority
  *============================================*/
 int pte_osThreadGetMaxPriority(){
-  return 3;
+  return 5;
 
 }
 
@@ -343,8 +346,8 @@ pte_osResult pte_osSemaphoreDelete(pte_osSemaphoreHandle handle){
 pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){
 
     DEBUG("releaseosSemaphorePost\n");
-    spin_lock(&(handle->lock));    
-    //handle->flags = STATE_LOCK(&(handle->lock));
+    
+    handle->flags = STATE_LOCK(&(handle->lock));
     handle->count += count;
     if(handle->sleepcount > 0){
       // int old = pte_osAtomicAdd(&(handle->count), count);
@@ -357,8 +360,8 @@ pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){
 	nk_wait_queue_wake_one(handle->wait_queue);
       }
     }
-    spin_unlock(&(handle->lock));
-    //STATE_UNLOCK(&(handle->lock), handle->flags);
+    
+    STATE_UNLOCK(&(handle->lock), handle->flags);
     return PTE_OS_OK;
 }
 
@@ -381,17 +384,14 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
    if(pTimeout == NULL){
      while(1){
        DEBUG("osSemaphoreBusyWaitPend\n");
-       spin_lock(&(handle->lock));
-       //handle->flags = STATE_LOCK(&(handle->lock));
-      if(handle->count > 0){
+       handle->flags = STATE_LOCK(&(handle->lock));
+       if(handle->count > 0){
 	 handle->count--;
          //pte_osAtomicDecrement(&(handle->count));;
-	 spin_unlock(&(handle->lock));
-     	 //STATE_UNLOCK(&(handle->lock), handle->flags);
+     	 STATE_UNLOCK(&(handle->lock), handle->flags);
      	 return PTE_OS_OK;
        }else{
-	 spin_unlock(&(handle->lock));
-     	 //STATE_UNLOCK(&(handle->lock), handle->flags);
+     	 STATE_UNLOCK(&(handle->lock), handle->flags);
 	 busy_wait++;
 	 if(busy_wait > ZOMBIE){
            busy_wait=0;
@@ -404,13 +404,11 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
      // We are ZOMBIE NOW! GO to sleep!
      while(1){
        DEBUG("osSemaphoreSleepPend\n");
-       spin_lock(&(handle->lock));
-       // handle->flags = STATE_LOCK(&(handle->lock));
+       handle->flags = STATE_LOCK(&(handle->lock));
        if(handle->count > 0){
 	 handle->count--;
 	 //int ori =  pte_osAtomicDecrement(&(handle->count));
-	 spin_unlock(&(handle->lock));
-	 // STATE_UNLOCK(&(handle->lock), handle->flags);
+     	 STATE_UNLOCK(&(handle->lock), handle->flags);
      	 return PTE_OS_OK;
        }else{
         //we need to gracefully put ourselves to sleep
@@ -437,7 +435,7 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
         // and reenable preemption
         nk_sched_sleep(&(handle->lock));
 	DEBUG("thread wake up from sleep\n");
-	//irq_enable_restore(handle->flags);
+	irq_enable_restore(handle->flags);
 	
        }
      }
