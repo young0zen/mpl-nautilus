@@ -20,7 +20,8 @@
 #define INFO(fmt, args...)   INFO_PRINT("sysconf: " fmt, ##args)
 
 
-#define DEBUG(fmt, args...)
+#define DEBUG(fmt, args...) DEBUG_PRINT("sysconf: " fmt, ##args)
+
 #ifdef NAUT_CONFIG_OPENMP_RT_DEBUG
 #undef DEBUG
 #define DEBUG(fmt, args...) DEBUG_PRINT("sysconf: " fmt, ##args)
@@ -54,10 +55,10 @@ __sysconf (int name)
     case _SC_NPROCESSORS_ONLN:
    DEBUG("sc_nprocessors_onln \n");
       return (long) nk_get_num_cpus();
-    case 84:
+//    case 84:
       //important to set default number of threads
-      DEBUG("unknown but possibly related to number of cpu %d\n", name);    
-      return (long) nk_get_num_cpus();
+//      DEBUG("unknown but possibly related to number of cpu %d\n", name);    
+//      return (long) nk_get_num_cpus();
     default:
       DEBUG("name %d\n", name);
       return 0;
