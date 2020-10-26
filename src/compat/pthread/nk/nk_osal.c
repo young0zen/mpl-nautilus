@@ -16,7 +16,7 @@
 #define RESTORE_UNIRQ(a,b) irq_enable_restore(b)
 
 #define SIMPLE_SPIN 1
-#define ZOMBIE 200  //after busy wait for ZOMBIE time check condition
+#define ZOMBIE 500  //after busy wait for ZOMBIE time check condition
 #define ZOMBIE_mode true //Put to sleep if true after ZOMBIE time
 
 //retrive osHandle from thread
@@ -212,7 +212,6 @@ pte_osThreadHandle pte_osThreadGetHandle(void){
 }
 
 int pte_osThreadGetPriority(pte_osThreadHandle threadHandle){
-  //return 0;
   return threadHandle->priority;
 }
 
