@@ -22,7 +22,7 @@
 //retrive osHandle from thread
 #define poffsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 #define pcontainer_of(ptr, type, member) ({                      \
-        const typeof( ((type *)0)->member ) *__mptr = (typeof(((type *)0)->member)) (ptr);    \
+        const typeof( ((type *)0)->member ) *__mptr = (typeof(((type *)0)->member)*) (ptr);    \
         (type *)( (char *)__mptr - offsetof(type,member) );})
 
 #define  TIME() (unsigned int)nk_sched_get_realtime();
@@ -146,22 +146,22 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
   //pte_osThreadEntryPoint is nk_thread_fun
   //pte_osThreadhandle will be nk_thread_id
 
-  pte_osThreadHandle handleobj = malloc(sizeof(struct thread_with_signal));
+  //pte_osThreadHandle handleobj = malloc(sizeof(nk_thread_t));
+  //pte_osThreadHandle handleobj = malloc(sizeof(struct thread_with_signal));
+  //memset(handleobj,0,sizeof(nk_thread_t));
 
-  memset(handleobj,0,sizeof(struct thread_with_signal));
-
-  handleobj->priority = initialPriority;
+  //handleobj->priority = initialPriority;
  
   struct sys_info *sys = per_cpu_get(system);
   COUNT = (++COUNT) % sys->num_cpus;
-  int ret = nk_thread_create(entryPoint, argv, NULL, false,(nk_stack_size_t) stackSize, &(handleobj->tid),COUNT);
+  int ret = nk_thread_create(entryPoint, argv, NULL, false,(nk_stack_size_t) stackSize, handle,COUNT);
   if (ret != 0){
     ERROR("create error exit\n");
     return PTE_OS_NO_RESOURCES;
   }
   
-  *handle = handleobj;
-  struct nk_thread* thread = (struct nk_thread*) (*handle)->tid;
+  //*handle = handleobj;
+  struct nk_thread* thread = (struct nk_thread*) (*handle);
 
   DEBUG("osThreadCreate %p, %lu ref %lu\n",  thread, thread->tid, thread->refcount);
  
@@ -171,7 +171,7 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
 
 pte_osResult pte_osThreadStart(pte_osThreadHandle handle){
 
-  nk_thread_run(handle->tid);
+  nk_thread_run(handle);
   DEBUG("osThreadStart %08x\n", handle);
 
   return PTE_OS_OK;
@@ -192,7 +192,7 @@ void pte_osThreadExit(){
  *=================================================================*/
 pte_osResult pte_osThreadWaitForEnd(pte_osThreadHandle threadHandle){
   DEBUG("pte osThread Wait For End\n");
-  nk_thread_t *thethread = (nk_thread_t*) (threadHandle->tid);
+  nk_thread_t *thethread = (nk_thread_t*) (threadHandle);
 
   // both ok
   //nk_wait_queue_sleep_extended(thethread->waitq, exit_check, thethread);
@@ -208,15 +208,17 @@ pte_osThreadHandle pte_osThreadGetHandle(void){
   //note pte_osThreadHandle is a pointer of struct _thread_with_signal
   nk_thread_t* thethread = get_cur_thread();
   DEBUG("osThreadGetHandle\n");
-  return (pte_osThreadHandle) pcontainer_of(thethread,struct thread_with_signal, tid);
+  return thethread;
+  //return (pte_osThreadHandle) pcontainer_of(thethread,struct thread_with_signal, tid);
 }
 
 int pte_osThreadGetPriority(pte_osThreadHandle threadHandle){
-  return threadHandle->priority;
+  return 0;
+    //threadHandle->priority;
 }
 
 pte_osResult pte_osThreadSetPriority(pte_osThreadHandle threadHandle, int newPriority){
-  threadHandle->priority = newPriority;
+  //threadHandle->priority = newPriority;
   return PTE_OS_OK;
 
 }
@@ -253,7 +255,7 @@ pte_osResult pte_osThreadCancel(pte_osThreadHandle handle){
    DEBUG("osThreadCancel\n");
    return PTE_OS_GENERAL_FAILURE;
 
-   handle->signal = NK_THREAD_CANCEL;
+   //handle->signal = NK_THREAD_CANCEL;
    // if thread is waiting in queue, wake up
    /* if(handle->in_queue){ */
    /*   nk_wait_queue_wake_all(handle->in_queue); */
@@ -268,13 +270,13 @@ pte_osResult pte_osThreadCheckCancel(pte_osThreadHandle handle){
     DEBUG("osThreadCheckCancel\n");
     return PTE_OS_OK;
 
-    nk_thread_t * thethread = (nk_thread_t*) handle->tid;
+    /* nk_thread_t * thethread = (nk_thread_t*) handle->tid; */
     
-    if (thethread->status ==NK_THR_EXITED){
-      return PTE_OS_INTERRUPTED;
-    }else{
-      return PTE_OS_OK;
-    }
+    /* if (thethread->status ==NK_THR_EXITED){ */
+    /*   return PTE_OS_INTERRUPTED; */
+    /* }else{ */
+    /*   return PTE_OS_OK; */
+    /* } */
 }
 
 /*===================================================*/

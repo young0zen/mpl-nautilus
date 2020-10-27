@@ -29,7 +29,8 @@ struct thread_with_signal{
 
 typedef  struct pmutex* pte_osMutexHandle;
 typedef  nk_thread_fun_t pte_osThreadEntryPoint;
-typedef  struct thread_with_signal* pte_osThreadHandle;
+//typedef  struct thread_with_signal* pte_osThreadHandle;
+typedef nk_thread_id_t pte_osThreadHandle;
 typedef struct psemaphore* pte_osSemaphoreHandle;
 
 typedef enum _pthread_signal{
