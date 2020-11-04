@@ -74,6 +74,7 @@ pthread_attr_init (pthread_attr_t * attr)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   pthread_attr_t attr_result;
 
   if (attr == NULL)
@@ -116,5 +117,6 @@ pthread_attr_init (pthread_attr_t * attr)
 
   *attr = attr_result;
 
+  NK_PROFILE_EXIT();
   return 0;
 }

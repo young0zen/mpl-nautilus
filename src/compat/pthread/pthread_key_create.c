@@ -80,6 +80,7 @@ pthread_key_create (pthread_key_t * key, void (*destructor) (void *))
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_key_t newkey;
 
@@ -116,5 +117,6 @@ pthread_key_create (pthread_key_t * key, void (*destructor) (void *))
 
   *key = newkey;
 
+  NK_PROFILE_EXIT();
   return (result);
 }

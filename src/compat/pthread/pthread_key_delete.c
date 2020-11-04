@@ -76,6 +76,7 @@ pthread_key_delete (pthread_key_t key)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
 
   if (key != NULL)
@@ -136,5 +137,6 @@ pthread_key_delete (pthread_key_t key)
       free (key);
     }
 
+  NK_PROFILE_EXIT();
   return (result);
 }

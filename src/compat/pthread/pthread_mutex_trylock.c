@@ -47,6 +47,7 @@
 int
 pthread_mutex_trylock (pthread_mutex_t * mutex)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_mutex_t mx;
 
@@ -91,5 +92,6 @@ pthread_mutex_trylock (pthread_mutex_t * mutex)
         }
     }
 
+  NK_PROFILE_EXIT();
   return (result);
 }

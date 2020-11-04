@@ -68,6 +68,7 @@ pthread_self (void)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   pthread_t self;
   pte_thread_t * sp;
 
@@ -112,6 +113,7 @@ pthread_self (void)
         }
     }
 
+  NK_PROFILE_EXIT();
   return (self);
 
 }				/* pthread_self */

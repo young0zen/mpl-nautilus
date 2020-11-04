@@ -64,6 +64,7 @@ pte_tkAssocDestroy (ThreadKeyAssoc * assoc)
  * -------------------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
 
   /*
    * Both key->keyLock and thread->threadLock are locked on
@@ -120,4 +121,5 @@ pte_tkAssocDestroy (ThreadKeyAssoc * assoc)
       free (assoc);
     }
 
+  NK_PROFILE_EXIT();
 }				/* pte_tkAssocDestroy */

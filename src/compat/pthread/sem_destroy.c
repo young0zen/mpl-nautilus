@@ -83,6 +83,7 @@ sem_destroy (sem_t * sem)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   sem_t s = NULL;
 
@@ -151,6 +152,7 @@ sem_destroy (sem_t * sem)
 
   free (s);
 
+  NK_PROFILE_EXIT();
   return 0;
 
 }				/* sem_destroy */

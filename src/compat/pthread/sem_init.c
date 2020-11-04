@@ -86,6 +86,7 @@ sem_init (sem_t * sem, int pshared, unsigned int value)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   sem_t s = NULL;
 
@@ -148,6 +149,7 @@ sem_init (sem_t * sem, int pshared, unsigned int value)
 
   *sem = s;
 
+  NK_PROFILE_EXIT();
   return 0;
 
 }				/* sem_init */

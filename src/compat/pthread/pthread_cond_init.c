@@ -76,6 +76,7 @@ pthread_cond_init (pthread_cond_t * cond, const pthread_condattr_t * attr)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result;
   pthread_cond_t cv = NULL;
 
@@ -170,6 +171,7 @@ DONE:
 
   *cond = cv;
 
+  NK_PROFILE_EXIT();
   return result;
 
 }				/* pthread_cond_init */

@@ -90,6 +90,7 @@
 int
 pthread_delay_np (struct timespec *interval)
 {
+  NK_PROFILE_ENTRY();
   unsigned int wait_time;
   unsigned int secs_in_millisecs;
   unsigned int millisecs;
@@ -162,5 +163,6 @@ pthread_delay_np (struct timespec *interval)
       pte_osThreadSleep (wait_time);
     }
 
+  NK_PROFILE_EXIT();
   return (0);
 }

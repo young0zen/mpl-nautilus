@@ -122,6 +122,7 @@ pthread_cond_destroy (pthread_cond_t * cond)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   pthread_cond_t cv;
   int result = 0, result1 = 0, result2 = 0;
 
@@ -252,5 +253,6 @@ pthread_cond_destroy (pthread_cond_t * cond)
       pte_osMutexUnlock(pte_cond_test_init_lock);
     }
 
+  NK_PROFILE_EXIT();
   return ((result != 0) ? result : ((result1 != 0) ? result1 : result2));
 }

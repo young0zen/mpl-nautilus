@@ -51,6 +51,7 @@ int
 pthread_barrier_init (pthread_barrier_t * barrier,
                       const pthread_barrierattr_t * attr, unsigned int count)
 {
+  NK_PROFILE_ENTRY();
   pthread_barrier_t b;
 
   if (barrier == NULL || count == 0)
@@ -89,5 +90,6 @@ pthread_barrier_init (pthread_barrier_t * barrier,
        free(b);
     }
 
+  NK_PROFILE_EXIT();
   return ENOMEM;
 }

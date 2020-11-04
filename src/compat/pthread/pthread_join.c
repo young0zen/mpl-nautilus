@@ -83,6 +83,7 @@ pthread_join (pthread_t thread, void **value_ptr)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result;
   pthread_t self;
   pte_thread_t * tp = (pte_thread_t *) thread.p;
@@ -161,6 +162,7 @@ pthread_join (pthread_t thread, void **value_ptr)
         }
     }
 
+  NK_PROFILE_EXIT();
   return (result);
 
 }				/* pthread_join */

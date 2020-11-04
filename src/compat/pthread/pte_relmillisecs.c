@@ -50,6 +50,7 @@ typedef long long int64_t;
 unsigned int
 pte_relmillisecs (const struct timespec * abstime)
 {
+  NK_PROFILE_ENTRY();
   const long long NANOSEC_PER_MILLISEC = 1000000;
   const long long MILLISEC_PER_SEC = 1000;
   unsigned int milliseconds;
@@ -93,5 +94,6 @@ pte_relmillisecs (const struct timespec * abstime)
       milliseconds = 0;
     }
 
+  NK_PROFILE_EXIT();
   return milliseconds;
 }

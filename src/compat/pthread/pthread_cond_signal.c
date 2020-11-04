@@ -70,6 +70,7 @@ pte_cond_unblock (pthread_cond_t * cond, int unblockAll)
  *   semBlockQueue
  */
 {
+  NK_PROFILE_ENTRY();
   int result;
   pthread_cond_t cv;
   int nSignalsToIssue;
@@ -152,6 +153,7 @@ pte_cond_unblock (pthread_cond_t * cond, int unblockAll)
         }
     }
 
+  NK_PROFILE_EXIT();
   return result;
 
 }				/* pte_cond_unblock */

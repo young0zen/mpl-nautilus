@@ -46,6 +46,8 @@
 void
 pte_rwlock_cancelwrwait (void *arg)
 {
+  
+  NK_PROFILE_ENTRY();
   pthread_rwlock_t rwl = (pthread_rwlock_t) arg;
 
   rwl->nSharedAccessCount = -rwl->nCompletedSharedAccessCount;
@@ -53,4 +55,5 @@ pte_rwlock_cancelwrwait (void *arg)
 
   (void) pthread_mutex_unlock (&(rwl->mtxSharedAccessCompleted));
   (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
+  NK_PROFILE_EXIT();
 }

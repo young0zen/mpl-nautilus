@@ -74,6 +74,7 @@ pthread_testcancel (void)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   pthread_t self = pthread_self ();
   pte_thread_t * sp = (pte_thread_t *) self.p;
 
@@ -104,4 +105,5 @@ pthread_testcancel (void)
     }
 
   (void) pthread_mutex_unlock (&sp->cancelLock);
+  NK_PROFILE_EXIT();
 }				/* pthread_testcancel */

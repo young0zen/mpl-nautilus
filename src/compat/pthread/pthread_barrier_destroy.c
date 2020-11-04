@@ -50,6 +50,7 @@
 int
 pthread_barrier_destroy (pthread_barrier_t * barrier)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_barrier_t b;
 
@@ -73,5 +74,6 @@ pthread_barrier_destroy (pthread_barrier_t * barrier)
     }
 
   *barrier = b;
+  NK_PROFILE_EXIT();
   return (result);
 }

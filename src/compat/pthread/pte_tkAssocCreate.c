@@ -81,6 +81,7 @@ pte_tkAssocCreate (pte_thread_t * sp, pthread_key_t key)
  * -------------------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   ThreadKeyAssoc *assoc;
 
   /*
@@ -122,6 +123,7 @@ pte_tkAssocCreate (pte_thread_t * sp, pthread_key_t key)
     }
   sp->keys = (void *) assoc;
 
+  NK_PROFILE_EXIT();
   return (0);
 
 }				/* pte_tkAssocCreate */

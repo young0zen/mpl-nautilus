@@ -48,6 +48,7 @@
 int
 pte_cond_check_need_init (pthread_cond_t * cond)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
 
   /*
@@ -99,5 +100,6 @@ pte_cond_check_need_init (pthread_cond_t * cond)
 
   pte_osMutexUnlock(pte_cond_test_init_lock);
 
+  NK_PROFILE_EXIT();
   return result;
 }

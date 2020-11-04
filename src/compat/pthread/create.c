@@ -88,6 +88,8 @@ pthread_create (pthread_t * tid,
  * ------------------------------------------------------
  */
 {
+  
+  NK_PROFILE_ENTRY();
   pthread_t thread;
   pte_thread_t * tp;
   register pthread_attr_t a;
@@ -235,6 +237,7 @@ pthread_create (pthread_t * tid,
    * Failure Code
    * ------------
    */
+  NK_PROFILE_EXIT();
 
 FAIL0:
   if (result != 0)

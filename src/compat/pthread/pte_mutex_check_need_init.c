@@ -60,6 +60,8 @@ static pthread_mutexattr_t pte_errorcheck_mutexattr = &pte_errorcheck_mutexattr_
 int
 pte_mutex_check_need_init (pthread_mutex_t * mutex)
 {
+
+  NK_PROFILE_ENTRY();
   register int result = 0;
   register pthread_mutex_t mtx;
 
@@ -122,6 +124,7 @@ pte_mutex_check_need_init (pthread_mutex_t * mutex)
 
   pte_osMutexUnlock(pte_mutex_test_init_lock);
 
+  NK_PROFILE_EXIT();
   return (result);
 }
 
