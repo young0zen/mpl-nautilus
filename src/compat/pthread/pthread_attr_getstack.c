@@ -47,8 +47,10 @@
 int
 pthread_attr_getstack (const pthread_attr_t * attr, void **stackaddr, size_t *stacksize)
 {
+  NK_PROFILE_ENTRY();
    int addr =  pthread_attr_getstackaddr(attr, stackaddr);
    int size = pthread_attr_getstacksize(attr,stacksize);
+  NK_PROFILE_EXIT();
    if ((addr == size) == 0){
      return 0;
    }

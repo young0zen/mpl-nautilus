@@ -124,6 +124,7 @@ pte_threadReusePop (void)
 void
 pte_threadReusePush (pthread_t thread)
 {
+  NK_PROFILE_ENTRY();
   pte_thread_t * tp = (pte_thread_t *) thread.p;
   pthread_t t;
 
@@ -157,4 +158,6 @@ pte_threadReusePush (pthread_t thread)
   pte_threadReuseBottom = tp;
 
   pte_osMutexUnlock(pte_thread_reuse_lock);
+  
+  NK_PROFILE_EXIT();
 }

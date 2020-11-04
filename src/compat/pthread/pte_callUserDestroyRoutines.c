@@ -75,6 +75,7 @@ pte_callUserDestroyRoutines (pthread_t thread)
  * -------------------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   ThreadKeyAssoc * assoc;
 
   if (thread.p != NULL)
@@ -228,4 +229,6 @@ pte_callUserDestroyRoutines (pthread_t thread)
         }
       while (assocsRemaining);
     }
+    
+  NK_PROFILE_EXIT();
 }				/* pte_callUserDestroyRoutines */

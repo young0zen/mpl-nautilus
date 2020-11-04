@@ -79,6 +79,8 @@ pte_pop_cleanup (int execute)
  * ------------------------------------------------------
  */
 {
+  
+  NK_PROFILE_ENTRY();
   pte_cleanup_t *cleanup;
 
   cleanup = (pte_cleanup_t *) pthread_getspecific (pte_cleanupKey);
@@ -96,6 +98,7 @@ pte_pop_cleanup (int execute)
 
     }
 
+  NK_PROFILE_EXIT();
   return (cleanup);
 
 }				/* pte_pop_cleanup */
@@ -144,6 +147,7 @@ pte_push_cleanup (pte_cleanup_t * cleanup,
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   cleanup->routine = routine;
   cleanup->arg = arg;
 
@@ -151,4 +155,5 @@ pte_push_cleanup (pte_cleanup_t * cleanup,
 
   pthread_setspecific (pte_cleanupKey, (void *) cleanup);
 
+  NK_PROFILE_EXIT();
 }				/* pte_push_cleanup */

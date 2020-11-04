@@ -100,6 +100,7 @@ pthread_once (pthread_once_t * once_control, void (*init_routine) (void))
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result;
   int state;
   pte_osSemaphoreHandle sema;
@@ -181,6 +182,8 @@ pthread_once (pthread_once_t * once_control, void (*init_routine) (void))
    * Failure Code
    * ------------
    */
+
+  NK_PROFILE_EXIT();
 FAIL0:
   return (result);
 }                               /* pthread_once */

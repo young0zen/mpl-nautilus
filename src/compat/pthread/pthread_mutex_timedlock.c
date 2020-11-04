@@ -74,6 +74,7 @@ pte_timed_eventwait (pte_osSemaphoreHandle event, const struct timespec *abstime
  */
 {
 
+  NK_PROFILE_ENTRY();
   unsigned int milliseconds;
   pte_osResult status;
   int retval;
@@ -102,6 +103,7 @@ pte_timed_eventwait (pte_osSemaphoreHandle event, const struct timespec *abstime
       retval = 0;
     }
 
+  NK_PROFILE_EXIT();
   return retval;
 
 }				/* pte_timed_semwait */
@@ -111,6 +113,7 @@ int
 pthread_mutex_timedlock (pthread_mutex_t * mutex,
                          const struct timespec *abstime)
 {
+  NK_PROFILE_ENTRY();
   int result;
   pthread_mutex_t mx;
 
@@ -185,5 +188,6 @@ pthread_mutex_timedlock (pthread_mutex_t * mutex,
         }
     }
 
+  NK_PROFILE_EXIT();
   return 0;
 }

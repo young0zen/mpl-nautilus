@@ -76,7 +76,9 @@ sched_yield (void)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   pte_osThreadSleep (1);
 
+  NK_PROFILE_EXIT();
   return 0;
 }

@@ -281,6 +281,7 @@ typedef struct
 static void
 pte_cond_wait_cleanup (void *args)
 {
+  NK_PROFILE_ENTRY();
   pte_cond_wait_cleanup_args_t *cleanup_args =
     (pte_cond_wait_cleanup_args_t *) args;
   pthread_cond_t cv = cleanup_args->cv;
@@ -355,12 +356,14 @@ pte_cond_wait_cleanup (void *args)
     {
       *resultPtr = result;
     }
+  NK_PROFILE_EXIT();
 }				/* pte_cond_wait_cleanup */
 
 static int
 pte_cond_timedwait (pthread_cond_t * cond,
                     pthread_mutex_t * mutex, const struct timespec *abstime)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_cond_t cv;
   pte_cond_wait_cleanup_args_t cleanup_args;
@@ -446,6 +449,7 @@ pte_cond_timedwait (pthread_cond_t * cond,
   /*
    * "result" can be modified by the cleanup handler.
    */
+  NK_PROFILE_EXIT();
   return result;
 
 }				/* pte_cond_timedwait */

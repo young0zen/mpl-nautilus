@@ -47,6 +47,7 @@
 int
 pthread_barrier_wait (pthread_barrier_t * barrier)
 {
+  NK_PROFILE_ENTRY();
   int result;
   int step;
   pthread_barrier_t b;
@@ -97,5 +98,6 @@ pthread_barrier_wait (pthread_barrier_t * barrier)
                 PTHREAD_BARRIER_SERIAL_THREAD : 0);
     }
 
+  NK_PROFILE_EXIT();
   return (result);
 }

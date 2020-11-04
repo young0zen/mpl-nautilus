@@ -69,6 +69,7 @@ pthread_cancel (pthread_t thread)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result;
   int cancel_self;
   pthread_t self;
@@ -170,5 +171,6 @@ pthread_cancel (pthread_t thread)
       (void) pthread_mutex_unlock (&tp->cancelLock);
     }
 
+  NK_PROFILE_EXIT();
   return (result);
 }

@@ -26,11 +26,11 @@ typedef enum { RUNNABLE_QUEUE = 0,
 typedef struct nk_sched_thread_state {
     // how this thread is to be scheduled
     struct nk_sched_constraints constraints;
-    //
+    // 
     rt_status status;
     // which queue the thread is currently on
     queue_type q_type;
-
+    
     int      is_intr;      // this is an interrupt thread
     int      is_task;      // this is a task thread
 
@@ -41,7 +41,6 @@ typedef struct nk_sched_thread_state {
                            // current slice for periodic
     uint64_t deadline;     // current deadline / time of next arrival if pending
                            // for an aperiodic task, this is its current dynamic
-                           // priority
     uint64_t exit_time;    // time of actual completion / arrival
 
     // Statistics are reset when the constraints are changed
@@ -57,7 +56,7 @@ typedef struct nk_sched_thread_state {
     struct nk_thread *thread;
 
     // the thread node in a thread list (the global thread list)
-    struct rt_node   *list;
+    struct rt_node   *list; 
 
 } rt_thread ;
 

@@ -54,6 +54,7 @@
 static void
 pte_threadDestroyCommon (pthread_t thread, unsigned char shouldThreadExit)
 {
+  NK_PROFILE_ENTRY();
   pte_thread_t * tp = (pte_thread_t *) thread.p;
   pte_thread_t threadCopy;
 
@@ -88,6 +89,7 @@ pte_threadDestroyCommon (pthread_t thread, unsigned char shouldThreadExit)
 
 
     }
+  NK_PROFILE_EXIT();
 }				/* pte_threadDestroy */
 
 void pte_threadDestroy (pthread_t thread)

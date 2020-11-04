@@ -57,6 +57,7 @@
 void
 pte_throw (unsigned int exception)
 {
+  NK_PROFILE_ENTRY();
   /*
    * Don't use pthread_self() to avoid creating an implicit POSIX thread handle
    * unnecessarily.
@@ -124,6 +125,7 @@ pte_throw (unsigned int exception)
 #endif /* PTE_CLEANUP_C */
 
   /* Never reached */
+  NK_PROFILE_EXIT();
 }
 
 

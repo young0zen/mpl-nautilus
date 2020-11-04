@@ -138,6 +138,7 @@ sem_timedwait (sem_t * sem, const struct timespec *abstime)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   sem_t s = *sem;
 
@@ -211,6 +212,7 @@ sem_timedwait (sem_t * sem, const struct timespec *abstime)
 
     }
 
+  NK_PROFILE_EXIT();
   return 0;
 
 }				/* sem_timedwait */

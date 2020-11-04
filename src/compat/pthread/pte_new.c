@@ -52,6 +52,7 @@
 pthread_t
 pte_new (void)
 {
+  NK_PROFILE_ENTRY();
   pthread_t t;
   pthread_t nil = {NULL, 0};
   pte_thread_t * tp;
@@ -89,6 +90,7 @@ pte_new (void)
   tp->cancelLock = PTHREAD_MUTEX_INITIALIZER;
   tp->threadLock = PTHREAD_MUTEX_INITIALIZER;
 
+  NK_PROFILE_EXIT();
   return t;
 
 }

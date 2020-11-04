@@ -78,6 +78,7 @@ pte_terminate ()
 
 int pte_threadStart (void *vthreadParms, void ** out)
 {
+  NK_PROFILE_ENTRY();
   ThreadParms * threadParms = (ThreadParms *) vthreadParms;
   pthread_t self;
   pte_thread_t * sp;
@@ -244,6 +245,7 @@ int pte_threadStart (void *vthreadParms, void ** out)
 
   //mjc from unsigned to unsigned *
  // return (unsigned) status;
+ NK_PROFILE_EXIT();
  return (unsigned long int)status;
 
 }				/* pte_threadStart */

@@ -51,6 +51,7 @@
 
 int pte_cancellable_wait (pte_osSemaphoreHandle semHandle, unsigned int* timeout)
 {
+  NK_PROFILE_ENTRY();
   int result = EINVAL;
   pte_osResult osResult;
   int cancelEnabled = 0;
@@ -126,6 +127,7 @@ int pte_cancellable_wait (pte_osSemaphoreHandle semHandle, unsigned int* timeout
     }
 
 
+  NK_PROFILE_EXIT();
   return (result);
 
 }                               /* CancelableWait */

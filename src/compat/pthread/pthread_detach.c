@@ -73,6 +73,7 @@ pthread_detach (pthread_t thread)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result;
   unsigned char destroyIt = PTE_FALSE;
   pte_thread_t * tp = (pte_thread_t *) thread.p;
@@ -137,6 +138,7 @@ pthread_detach (pthread_t thread)
         }
     }
 
+  NK_PROFILE_EXIT();
   return (result);
 
 }				/* pthread_detach */

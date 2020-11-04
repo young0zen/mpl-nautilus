@@ -208,6 +208,7 @@ sem_wait_nocancel (sem_t * sem)
  * ------------------------------------------------------
  */
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   sem_t s = *sem;
 
@@ -249,6 +250,7 @@ sem_wait_nocancel (sem_t * sem)
       return -1;
     }
 
+  NK_PROFILE_EXIT();
   return 0;
 
 }				/* sem_wait_nocancel */

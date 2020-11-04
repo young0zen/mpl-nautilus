@@ -47,6 +47,7 @@
 int
 pte_rwlock_check_need_init (pthread_rwlock_t * rwlock)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
 
   /*
@@ -98,5 +99,6 @@ pte_rwlock_check_need_init (pthread_rwlock_t * rwlock)
 
   pte_osMutexUnlock(pte_rwlock_test_init_lock);
 
+  NK_PROFILE_EXIT();
   return result;
 }

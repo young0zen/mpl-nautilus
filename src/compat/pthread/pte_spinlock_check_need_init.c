@@ -47,6 +47,7 @@
 int
 pte_spinlock_check_need_init (pthread_spinlock_t * lock)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
 
   /*
@@ -85,5 +86,6 @@ pte_spinlock_check_need_init (pthread_spinlock_t * lock)
 
   pte_osMutexUnlock(pte_spinlock_test_init_lock);
 
+  NK_PROFILE_EXIT();
   return (result);
 }

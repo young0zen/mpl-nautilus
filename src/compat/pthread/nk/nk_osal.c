@@ -17,7 +17,7 @@
 
 #define SIMPLE_SPIN 1
 #define ZOMBIE 500  //after busy wait for ZOMBIE time check condition
-#define ZOMBIE_mode true //Put to sleep if true after ZOMBIE time
+#define ZOMBIE_mode false //Put to sleep if true after ZOMBIE time
 
 //retrive osHandle from thread
 #define poffsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
@@ -55,15 +55,23 @@ pte_osResult pte_osInit(void){
 
 pte_osResult pte_osMutexCreate(pte_osMutexHandle *pHandle){
 
+   
+   NK_PROFILE_ENTRY();
+   
    *pHandle = malloc(sizeof(struct pmutex));
    spinlock_init(&((*pHandle)->lock));
    DEBUG("osMutexCreate\n");
+    
+   NK_PROFILE_EXIT();
+
    return PTE_OS_OK;
 }
 
 pte_osResult pte_osMutexDelete(pte_osMutexHandle handle){
+    NK_PROFILE_ENTRY();
   spinlock_deinit(&(handle->lock));
   DEBUG("osMutexDelete\n");
+    NK_PROFILE_EXIT();
   return PTE_OS_OK;
 }
 
@@ -76,11 +84,13 @@ pte_osResult pte_osMutexDelete(pte_osMutexHandle handle){
  *=================================================================*/
 pte_osResult pte_osMutexLock(pte_osMutexHandle handle){
 
+    NK_PROFILE_ENTRY();
 #if SIMPLE_SPIN
    spin_lock(&(handle->lock));
 #else	
   handle->flags = STATE_LOCK(&(handle->lock));
 #endif
+    NK_PROFILE_EXIT();
 
   DEBUG("osMutexLock\n");
   return PTE_OS_OK;
@@ -89,6 +99,7 @@ pte_osResult pte_osMutexLock(pte_osMutexHandle handle){
 
 
 pte_osResult pte_osMutexTimedLock(pte_osMutexHandle handle, unsigned int timeout){
+    NK_PROFILE_ENTRY();
   unsigned int start = TIME();
   unsigned int end = start;
   int res = -1;
@@ -102,6 +113,9 @@ pte_osResult pte_osMutexTimedLock(pte_osMutexHandle handle, unsigned int timeout
        
     DEBUG("osMutexTimedLock\n");
     end = TIME();
+    
+    NK_PROFILE_EXIT();
+    
     if(res == 0){
       return PTE_OS_OK;
     }
@@ -112,11 +126,14 @@ pte_osResult pte_osMutexTimedLock(pte_osMutexHandle handle, unsigned int timeout
 
 pte_osResult pte_osMutexUnlock(pte_osMutexHandle handle){
 
+    NK_PROFILE_ENTRY();
 #if SIMPLE_SPIN
    spin_unlock(&(handle->lock));
 #else
    STATE_UNLOCK(&(handle->lock), handle->flags);
 #endif
+
+   NK_PROFILE_EXIT();
 
   DEBUG("osMutexUnlock\n");
   return PTE_OS_OK;
@@ -143,6 +160,7 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
                                 void *argv,
                                 pte_osThreadHandle* handle)
 {
+    NK_PROFILE_ENTRY();
   //pte_osThreadEntryPoint is nk_thread_fun
   //pte_osThreadhandle will be nk_thread_id
 
@@ -155,6 +173,9 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
   struct sys_info *sys = per_cpu_get(system);
   COUNT = (++COUNT) % sys->num_cpus;
   int ret = nk_thread_create(entryPoint, argv, NULL, false,(nk_stack_size_t) stackSize, handle,COUNT);
+    
+  NK_PROFILE_EXIT();
+  
   if (ret != 0){
     ERROR("create error exit\n");
     return PTE_OS_NO_RESOURCES;
@@ -170,8 +191,13 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
 
 
 pte_osResult pte_osThreadStart(pte_osThreadHandle handle){
+   
+  NK_PROFILE_ENTRY();
 
   nk_thread_run(handle);
+    
+  NK_PROFILE_EXIT();
+  
   DEBUG("osThreadStart %08x\n", handle);
 
   return PTE_OS_OK;
@@ -191,13 +217,17 @@ void pte_osThreadExit(){
  * @return PTE_OS_OK - specified thread terminated.
  *=================================================================*/
 pte_osResult pte_osThreadWaitForEnd(pte_osThreadHandle threadHandle){
+
+  NK_PROFILE_ENTRY();
+  
   DEBUG("pte osThread Wait For End\n");
   nk_thread_t *thethread = (nk_thread_t*) (threadHandle);
 
   // both ok
   //nk_wait_queue_sleep_extended(thethread->waitq, exit_check, thethread);
-  
-  return nk_join(thethread, NULL);
+  int ans = nk_join(thethread, NULL); 
+  NK_PROFILE_EXIT();
+  return ans;
 }
 
 
@@ -321,6 +351,7 @@ int pte_osThreadGetDefaultPriority(){
  *==================================================================================*/
 pte_osResult pte_osSemaphoreCreate(int initialValue, pte_osSemaphoreHandle *pHandle){
 
+   NK_PROFILE_ENTRY();
    //pte_osSemaphoreHandle is nk_semaphore
    DEBUG("osSemaphoreCreate\n");
    
@@ -337,7 +368,7 @@ pte_osResult pte_osSemaphoreCreate(int initialValue, pte_osSemaphoreHandle *pHan
   /*       ERROR("Failed to allocate wait queue\n"); */
   /*       return  PTE_OS_NO_RESOURCES; */
   /*   } */
-  
+  NK_PROFILE_EXIT();
   return PTE_OS_OK;
 }
 
@@ -366,6 +397,7 @@ pte_osResult pte_osSemaphoreDelete(pte_osSemaphoreHandle handle){
  *================================================================*/
 pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){
 
+    NK_PROFILE_ENTRY();
     DEBUG("releaseosSemaphorePost\n");
     
 #if SIMPLE_SPIN
@@ -392,6 +424,8 @@ pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){
 #else
     STATE_UNLOCK(&(handle->lock), handle->flags);
 #endif
+    
+    NK_PROFILE_EXIT();
     return PTE_OS_OK;
 }
 
@@ -409,6 +443,7 @@ pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){
 
 pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTimeout){
 
+   NK_PROFILE_ENTRY();
    int busy_wait = 0;
  
    if(pTimeout == NULL){
@@ -430,7 +465,9 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
 #else
    STATE_UNLOCK(&(handle->lock), handle->flags);
 #endif
-
+  
+   NK_PROFILE_EXIT();
+    
      	 return PTE_OS_OK;
        }else{
 
@@ -468,6 +505,8 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
 #else 
    STATE_UNLOCK(&(handle->lock), handle->flags);
 #endif
+         
+         NK_PROFILE_EXIT();
      	 return PTE_OS_OK;
        }else{
         //we need to gracefully put ourselves to sleep
@@ -481,8 +520,11 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
 	  handle->wait_queue = nk_wait_queue_create(NULL);
 
 	  if (!handle->wait_queue) {
+            
 	    free(handle);
 	    ERROR("Failed to allocate wait queue\n");
+	    
+            NK_PROFILE_EXIT();
 	    return  PTE_OS_NO_RESOURCES;
 	  }
         }
@@ -512,6 +554,8 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
 	handle->count--;
 	//pte_osAtomicDecrement(&(handle->count));
 	 STATE_UNLOCK(&(handle->lock), handle->flags);
+	 
+          NK_PROFILE_EXIT();
 	 return PTE_OS_OK;
        }else{
 	 STATE_UNLOCK(&(handle->lock), handle->flags);
@@ -519,6 +563,7 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
        }
        end = (unsigned int) nk_sched_get_realtime();
     }
+    NK_PROFILE_EXIT();
     return PTE_OS_TIMEOUT;
   }
 }
@@ -590,8 +635,11 @@ void pte_osTlsInit(void){
  *                         maximum number of keys reached).
  *===================================================================*/
 pte_osResult pte_osTlsAlloc(unsigned int *pKey){
+
+  NK_PROFILE_ENTRY();
   DEBUG("osTlsAlloc\n");
   nk_tls_key_create(pKey, NULL);
+  NK_PROFILE_EXIT();
   return PTE_OS_OK;
 }
 
@@ -601,8 +649,10 @@ pte_osResult pte_osTlsAlloc(unsigned int *pKey){
  * @return PTE_OS_OK - TLS key was successfully freed.
  *================================================================*/
 pte_osResult pte_osTlsFree(unsigned int key){
+  NK_PROFILE_ENTRY();
   DEBUG("osTlsFree\n");
   nk_tls_key_delete(key);
+  NK_PROFILE_EXIT();
   return PTE_OS_OK;
 }
 
