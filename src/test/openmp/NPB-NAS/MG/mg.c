@@ -75,14 +75,29 @@ static void nonzero(double ***z, int n1, int n2, int n3);
 /*--------------------------------------------------------------------
       program mg
 c-------------------------------------------------------------------*/
-static int program_MG(char *_buf, void* _priv);
+int program_MG(char *_buf, void* _priv);
+int program_MG_profile(char *_, void *__);
 
 static struct shell_cmd_impl nas_mg_impl = {
     .cmd      = "nas-mg",
     .help_str = "NAS parallel benchmark MG",
-    .handler  = program_MG,
+    .handler  = program_MG_profile,
 };
 nk_register_shell_cmd(nas_mg_impl);
+
+int program_MG_profile(char *_, void *__){
+   
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_start();
+#endif      
+      program_MG(_,__);
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_end();
+      nk_instrument_query();
+#endif
+return 0;
+}
+
 
 int program_MG(char * _buf, void *_priv) {
 

@@ -19,6 +19,7 @@
 #define ZOMBIE 500  //after busy wait for ZOMBIE time check condition
 #define ZOMBIE_mode false //Put to sleep if true after ZOMBIE time
 
+#define TICKET_LOCK 0
 //retrive osHandle from thread
 #define poffsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 #define pcontainer_of(ptr, type, member) ({                      \
@@ -57,9 +58,14 @@ pte_osResult pte_osMutexCreate(pte_osMutexHandle *pHandle){
 
    
    NK_PROFILE_ENTRY();
-   
+
+#if TICKET_LOCK
+   *pHandle = malloc(sizeof(union nk_ticket_lock));
+   nk_ticket_lock_init(*pHandle);
+#else
    *pHandle = malloc(sizeof(struct pmutex));
    spinlock_init(&((*pHandle)->lock));
+#endif
    DEBUG("osMutexCreate\n");
     
    NK_PROFILE_EXIT();
@@ -69,8 +75,12 @@ pte_osResult pte_osMutexCreate(pte_osMutexHandle *pHandle){
 
 pte_osResult pte_osMutexDelete(pte_osMutexHandle handle){
     NK_PROFILE_ENTRY();
-  spinlock_deinit(&(handle->lock));
-  DEBUG("osMutexDelete\n");
+#if TICKET_LOCK
+    nk_ticket_lock_deinit(handle);
+#else
+    spinlock_deinit(&(handle->lock));
+#endif
+    DEBUG("osMutexDelete\n");
     NK_PROFILE_EXIT();
   return PTE_OS_OK;
 }
@@ -85,10 +95,15 @@ pte_osResult pte_osMutexDelete(pte_osMutexHandle handle){
 pte_osResult pte_osMutexLock(pte_osMutexHandle handle){
 
     NK_PROFILE_ENTRY();
+
+#if TICKET_LOCK
+    nk_ticket_lock(handle);
+#else
 #if SIMPLE_SPIN
    spin_lock(&(handle->lock));
 #else	
   handle->flags = STATE_LOCK(&(handle->lock));
+#endif
 #endif
     NK_PROFILE_EXIT();
 
@@ -105,12 +120,15 @@ pte_osResult pte_osMutexTimedLock(pte_osMutexHandle handle, unsigned int timeout
   int res = -1;
   while( (end-start) <timeout*NS ){
 
+#if TICKET_LOCK
+    res = nk_ticket_trylock(handle);
+#else
 #if SIMPLE_SPIN
    res = spin_try_lock(&(handle->lock));
 #else
    res=STATE_TRY_LOCK(&(handle->lock), &(handle->flags) );
 #endif
-       
+#endif       
     DEBUG("osMutexTimedLock\n");
     end = TIME();
     
@@ -127,12 +145,16 @@ pte_osResult pte_osMutexTimedLock(pte_osMutexHandle handle, unsigned int timeout
 pte_osResult pte_osMutexUnlock(pte_osMutexHandle handle){
 
     NK_PROFILE_ENTRY();
+#if TICKET_LOCK
+    nk_ticket_unlock(handle);
+#else
 #if SIMPLE_SPIN
    spin_unlock(&(handle->lock));
 #else
    STATE_UNLOCK(&(handle->lock), handle->flags);
 #endif
-
+#endif
+   
    NK_PROFILE_EXIT();
 
   DEBUG("osMutexUnlock\n");
@@ -354,11 +376,16 @@ pte_osResult pte_osSemaphoreCreate(int initialValue, pte_osSemaphoreHandle *pHan
    NK_PROFILE_ENTRY();
    //pte_osSemaphoreHandle is nk_semaphore
    DEBUG("osSemaphoreCreate\n");
-   
+
+#if TICKET_LOCK
+   *pHandle = malloc(sizeof(struct ticket_semaphore));
+   memset(*pHandle,0, sizeof(struct ticket_semaphore));
+   nk_ticket_lock_init(&((*pHandle)->lock));
+#else
    *pHandle = malloc(sizeof(struct psemaphore));
    memset(*pHandle,0,sizeof(struct psemaphore));
-
   spinlock_init(&((*pHandle)->lock));
+#endif
   (*pHandle)->count = 0;
 
   /* (*pHandle)->wait_queue = nk_wait_queue_create(NULL); */
@@ -381,7 +408,8 @@ pte_osResult pte_osSemaphoreCreate(int initialValue, pte_osSemaphoreHandle *pHan
  *===============================================================*/
 pte_osResult pte_osSemaphoreDelete(pte_osSemaphoreHandle handle){
   //nk_semaphore_release(handle);
-  spinlock_deinit(&(handle->lock));
+
+  //spinlock_deinit(&(handle->lock));
   free(handle);
   DEBUG("osSemaphoreDelete\n");
   return PTE_OS_OK;
@@ -399,13 +427,16 @@ pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){
 
     NK_PROFILE_ENTRY();
     DEBUG("releaseosSemaphorePost\n");
-    
+#if TICKET_LOCK
+    nk_ticket_lock(&(handle->lock));
+#else
 #if SIMPLE_SPIN
    spin_lock(&(handle->lock));
 #else
   handle->flags = STATE_LOCK(&(handle->lock));
 #endif
-
+#endif
+  
     handle->count += count;
     if(handle->sleepcount > 0){
       // int old = pte_osAtomicAdd(&(handle->count), count);
@@ -418,11 +449,14 @@ pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){
 	nk_wait_queue_wake_one(handle->wait_queue);
       }
     }
-
+#if TICKET_LOCK
+    nk_ticket_unlock(&(handle->lock));
+#else
 #if SIMPLE_SPIN
    spin_unlock(&(handle->lock));
 #else
     STATE_UNLOCK(&(handle->lock), handle->flags);
+#endif
 #endif
     
     NK_PROFILE_EXIT();
@@ -448,35 +482,42 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
  
    if(pTimeout == NULL){
      while(1){
-       DEBUG("osSemaphoreBusyWaitPend\n");
-    
-#if SIMPLE_SPIN
-   spin_lock(&(handle->lock));
+       DEBUG("osSemaphoreBusyWaitPend\n");    
+#if TICKET_LOCK
+    nk_ticket_lock(&(handle->lock));
 #else
-  handle->flags = STATE_LOCK(&(handle->lock));
+#if SIMPLE_SPIN
+    spin_lock(&(handle->lock));
+#else
+    handle->flags = STATE_LOCK(&(handle->lock));
 #endif
-       
+#endif  
        if(handle->count > 0){
 	 handle->count--;
          //pte_osAtomicDecrement(&(handle->count));;
-
+#if TICKET_LOCK
+   nk_ticket_unlock(&(handle->lock));
+#else
 #if SIMPLE_SPIN
    spin_unlock(&(handle->lock));
 #else
    STATE_UNLOCK(&(handle->lock), handle->flags);
 #endif
-  
+#endif
+   
    NK_PROFILE_EXIT();
     
      	 return PTE_OS_OK;
        }else{
-
+#if TICKET_LOCK
+   nk_ticket_unlock(&(handle->lock));
+#else
 #if SIMPLE_SPIN
    spin_unlock(&(handle->lock));
 #else
    STATE_UNLOCK(&(handle->lock), handle->flags);
 #endif
-     	 
+#endif     	 
 	 busy_wait++;
 	 if(busy_wait > ZOMBIE){
            busy_wait=0;
@@ -489,23 +530,27 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
      // We are ZOMBIE NOW! GO to sleep!
      while(1){
        DEBUG("osSemaphoreSleepPend\n");
-       
+#if TICKET_LOCK
+   nk_ticket_lock(&(handle->lock));
+#else
 #if SIMPLE_SPIN
    spin_lock(&(handle->lock));
 #else
   handle->flags = STATE_LOCK(&(handle->lock));
 #endif
-       
+#endif       
        if(handle->count > 0){
 	 handle->count--;
 	 //int ori =  pte_osAtomicDecrement(&(handle->count));
-
+#if TICKET_LOCK
+   nk_ticket_unlock(&(handle->lock));
+#else
 #if SIMPLE_SPIN
    spin_unlock(&(handle->lock));
 #else 
    STATE_UNLOCK(&(handle->lock), handle->flags);
 #endif
-         
+#endif         
          NK_PROFILE_EXIT();
      	 return PTE_OS_OK;
        }else{
@@ -542,7 +587,7 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
        }
      }
    }else{
-  
+     //never used
     DEBUG("timed pend semaphore\n");
     unsigned int start = (unsigned int) nk_sched_get_realtime();
     unsigned int end = start;
