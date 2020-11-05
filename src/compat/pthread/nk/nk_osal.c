@@ -19,7 +19,7 @@
 #define ZOMBIE 500  //after busy wait for ZOMBIE time check condition
 #define ZOMBIE_mode false //Put to sleep if true after ZOMBIE time
 
-#define TICKET_LOCK 0
+#define TICKET_LOCK 1
 //retrive osHandle from thread
 #define poffsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 #define pcontainer_of(ptr, type, member) ({                      \
@@ -386,7 +386,7 @@ pte_osResult pte_osSemaphoreCreate(int initialValue, pte_osSemaphoreHandle *pHan
    memset(*pHandle,0,sizeof(struct psemaphore));
   spinlock_init(&((*pHandle)->lock));
 #endif
-  (*pHandle)->count = 0;
+  (*pHandle)->count = initialValue;
 
   /* (*pHandle)->wait_queue = nk_wait_queue_create(NULL); */
 
