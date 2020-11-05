@@ -175,7 +175,7 @@ int
 clock_gettime (clockid_t clk_id, struct timespec * tp)
 {
 
-    BOGUS();
+ //   BOGUS();
     if (clk_id != CLOCK_MONOTONIC) {
         printk("NAUTILUS WARNING: using invalid clock type\n");
         return -EINVAL;
@@ -194,10 +194,16 @@ clock_gettime (clockid_t clk_id, struct timespec * tp)
     tp->tv_sec    = nsec / 1000000000;
     tp->tv_nsec   = nsec % 1000000000;
 #else
+
+    uint64_t ns = nk_sched_get_realtime();
+
+    tp->tv_sec =  ns / 1000000000ULL;
+    tp->tv_nsec = ns % 1000000000ULL;
+
     /* runs at "10kHz" */
-    tp->tv_nsec = dummy_mono_clock*100000;
-    tp->tv_sec  = dummy_mono_clock/10000;
-    ++dummy_mono_clock;
+    //tp->tv_nsec = dummy_mono_clock*100000;
+    //tp->tv_sec  = dummy_mono_clock/10000;
+    //++dummy_mono_clock;
 #endif
 
     return 0;

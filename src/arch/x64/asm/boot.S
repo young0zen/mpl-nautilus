@@ -125,7 +125,7 @@ paging_longmode_setup:
     movl %eax, (%ebx)
    
     //set first 4 entry of PDPT 4GB total
-    movl $4, %ecx
+    movl $2, %ecx
     movl $pd, %edx
     movl $0x83, %eax // set PS bit also (PDE -> 2MB page)
 
