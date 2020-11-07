@@ -52,7 +52,7 @@
 
 
 #ifdef __GNUC__
-#include <stdlib.h>
+//#include <stdlib.h>
 #endif
 
 #include "benchtest.h"

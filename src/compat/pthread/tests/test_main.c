@@ -1,12 +1,13 @@
-#include "pte_osal.h"
+//#include "../nk/pte_osal.h"
 #include "test.h"
-
+#include <nautilus/shell.h>
 const char * error_string;
 
 int assertE;
 
 ///@todo: add cancellable wait for thread end for DSP/BIOS
 ///@todo: look at removing/changing ftime
+
 
 static void runBarrierTests(void)
 {
@@ -450,14 +451,23 @@ static void runExceptionTests()
   pthread_test_exception3();
 }
 
-void pte_test_main()
+static int pte_test_main();
+
+static struct shell_cmd_impl pte_test_impl = {
+	.cmd	  = "pte-test",
+	.help_str = "PTE Test: pte-test",
+	.handler  = pte_test_main,
+};
+
+nk_register_shell_cmd(pte_test_impl);
+static int pte_test_main()
 {
   int i;
 
   if (!pthread_init())
     {
       printf("Failed to initialize pthreads library.\n");
-      return;
+      return 1;
     }
 
   printf("Running tests...\n");
@@ -468,21 +478,21 @@ void pte_test_main()
       printf("=========================\n");
 
       runThreadTests(); 
-      runMiscTests();
-      runMutexTests();
-      runSemTests();
-      runCondvarTests();
-      runBarrierTests();
-      runSpinTests();
-      runRwlockTests();
-      runCancelTests();
-      runExceptionTests();
-      runBenchTests();
-      runStressTests();
+      //runMiscTests();
+      //runMutexTests();
+      //runSemTests();
+      //runCondvarTests();
+      //runBarrierTests();
+      //runSpinTests();
+      //runRwlockTests();
+      //runCancelTests();
+      //runExceptionTests();
+      //runBenchTests();
+      //runStressTests();
 
     }
 
   printf("Tests complete!\n");
-
+  return 0;
 }
 

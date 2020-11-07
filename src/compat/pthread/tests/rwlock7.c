@@ -8,7 +8,7 @@
 #include "test.h"
 
 #ifdef __GNUC__
-#include <stdlib.h>
+//#include <stdlib.h>
 #endif
 
 #define THREADS         5

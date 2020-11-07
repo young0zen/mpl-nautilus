@@ -336,7 +336,9 @@ pte_osResult pte_osThreadCheckCancel(pte_osThreadHandle handle){
 /* fast yield                                        */
 /*===================================================*/
 void pte_osThreadSleep(unsigned int msecs){
-  nk_yield();
+	DEBUG("SLEEP\n");
+  	nk_sleep(msecs);
+	//nk_yield();
 }
 
 /*=============================================

@@ -6,6 +6,20 @@
 
 #define calloc(a,b) malloc(a*b)
 
+#define OS_MAX_SIMUL_THREADS 1000
+
+#define OS_DEFAULT_PRIO 11
+
+#define OS_MIN_PRIO 17
+#define OS_MAX_PRIO 32
+
+//#define HAVE_THREAD_SAFE_ERRNO
+
+#define POLLING_DELAY_IN_us 100
+
+#define OS_MAX_SEM_VALUE 254
+
+
 #ifndef EPERM
 #define EPERM           1
 #endif // EPERM

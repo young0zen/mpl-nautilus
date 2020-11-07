@@ -38,13 +38,14 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "pthread.h"
-#include "sched.h"
-#include "semaphore.h"
-#include "benchtest.h"
-#include "implement.h"
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include "pthread.h"
+//#include "sched.h"
+//#include "semaphore.h"
+//#include "benchtest.h"
+//#include "implement.h"
+#include "test.h"
 
 void
 dummy_call(int * a)

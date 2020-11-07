@@ -50,8 +50,8 @@
  *	pthread_mutex_destroy()
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include "test.h"
 
 static pthread_mutex_t mutex = NULL;

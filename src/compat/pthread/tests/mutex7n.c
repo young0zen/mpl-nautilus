@@ -53,7 +53,7 @@
  *	pthread_mutex_unlock()
  */
 
-#include <stdlib.h>
+//#include <stdlib.h>
 
 #include "test.h"
 

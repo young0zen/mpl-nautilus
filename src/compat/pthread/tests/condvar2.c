@@ -87,7 +87,7 @@
 static pthread_cond_t cv;
 static pthread_mutex_t mutex;
 
-#include "../implement.h"
+//#include "../implement.h"
 
 int pthread_test_condvar2()
 {

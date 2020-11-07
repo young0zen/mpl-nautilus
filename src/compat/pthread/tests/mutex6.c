@@ -50,10 +50,10 @@
  *	pthread_mutex_unlock()
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 
-#include "pte_osal.h"
+//#include "pte_osal.h"
 
 #include "test.h"
 

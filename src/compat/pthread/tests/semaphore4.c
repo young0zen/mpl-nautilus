@@ -79,8 +79,9 @@
  */
 
 #include "test.h"
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include<nautilus/nautilus.h>
 
 #define MAX_COUNT OS_MAX_SIMUL_THREADS
 

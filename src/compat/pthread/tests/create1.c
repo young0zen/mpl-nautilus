@@ -45,7 +45,7 @@
  * Depends on API functions: None.
  */
 
-#include <stdlib.h>
+//#include <stdlib.h>
 
 #include "test.h"
 
