@@ -68,14 +68,25 @@
  */
 
 #define _POSIX_SEMAPHORES
-
 #ifdef __cplusplus
 extern "C"
   {
 #endif				/* __cplusplus */
+    struct nk_semaphore {
+      spinlock_t         lock;
+      struct list_head   node; // for global list of named semaphores
+      uint64_t           refcount;
+      char               name[NK_SEMAPHORE_NAME_LEN];
 
+      // count>0  =>  normal operation (down will not wait)
+      // count==0 =>  next down will wait
+      // count <0 => -count waiters exist, next down will wait
+      int                 count;
+      nk_wait_queue_t    *wait_queue;
+      int                 prospective_count; // count blocked in timed down
+   };
 
-    typedef struct sem_t_ * sem_t;
+    typedef struct nk_semaphore sem_t;
 
     int sem_init (sem_t * sem,
                   int pshared,

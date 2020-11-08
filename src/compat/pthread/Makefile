@@ -83,11 +83,11 @@ MISC_OBJS = \
   pte_getprocessors.o \
   pte_spinlock_check_need_init.o \
   global.o \
-  pthread_timechange_handler_np.o \
-  pte_cond_check_need_init.o \
 	pthread_getconcurrency.o \
 	pthread_setconcurrency.o \
   pte_cancellable_wait.o
+  #pthread_timechange_handler_np.o \
+  #pte_cond_check_need_init.o \
 
 SEM_OBJS = \
   sem_close.o \

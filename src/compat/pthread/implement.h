@@ -56,7 +56,8 @@
 /* use local include files during development */
 #include "semaphore.h"
 #include "sched.h"
-
+#include <nautilus/spinlock.h>
+#include <nautilus/waitqueue.h>
 
 typedef enum
 {
@@ -145,7 +146,9 @@ struct sem_t_
 
 struct pthread_mutex_t_
   {
-    pte_osSemaphoreHandle handle;
+    //pte_osSemaphoreHandle handle;
+    struct nk_semaphore *sem;
+    
     int lock_idx;
     /* Provides exclusive access to mutex state
     				   via the Interlocked* mechanism.
@@ -197,6 +200,23 @@ struct pthread_spinlock_t_
       } u;
   };
 
+
+struct nk_pthread_barrier_t_
+{
+   spinlock_t lock;
+
+   unsigned remaining;
+   unsigned init_count;
+   uint8_t active;
+
+   unsigned pshared;
+   uint8_t pad[48];
+   //padding on cacheline(64bytes)
+   volatile unsigned notify;
+
+} __attribute__((packed)) __attribute__((aligned(64)));
+
+
 struct pthread_barrier_t_
   {
     unsigned int nCurrentBarrierHeight;
@@ -208,7 +228,7 @@ struct pthread_barrier_t_
 
 struct pthread_barrierattr_t_
   {
-    int pshared;
+    unsigned pshared;
   };
 
 struct pthread_key_t_
@@ -229,6 +249,19 @@ struct ThreadParms
     void *(*start) (void *);
     void *arg;
   };
+
+struct nk_pthread_cond_t_
+{
+    NK_LOCK_T lock;
+    nk_wait_queue_t * wait_queue;
+    unsigned nwaiters;
+    unsigned long long wakeup_seq;
+    unsigned long long woken_seq;
+    unsigned long long main_seq;
+    unsigned bcast_seq;
+
+};
+
 
 struct pthread_cond_t_
   {
@@ -419,8 +452,6 @@ extern pte_thread_t * pte_threadReuseTop;
 extern pte_thread_t * pte_threadReuseBottom;
 extern pthread_key_t pte_selfThreadKey;
 extern pthread_key_t pte_cleanupKey;
-extern pthread_cond_t pte_cond_list_head;
-extern pthread_cond_t pte_cond_list_tail;
 
 extern int pte_mutex_default_kind;
 

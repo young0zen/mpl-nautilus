@@ -1,56 +1,7 @@
-/*
- * -------------------------------------------------------------
- *
- * Module: sem_trywait.c
- *
- * Purpose:
- *	Semaphores aren't actually part of the PThreads standard.
- *	They are defined by the POSIX Standard:
- *
- *		POSIX 1003.1b-1993	(POSIX.1b)
- *
- * -------------------------------------------------------------
- *
- * --------------------------------------------------------------------------
- *
- *      Pthreads-embedded (PTE) - POSIX Threads Library for embedded systems
- *      Copyright(C) 2008 Jason Schmidlapp
- *
- *      Contact Email: jschmidlapp@users.sourceforge.net
- *
- *
- *      Based upon Pthreads-win32 - POSIX Threads Library for Win32
- *      Copyright(C) 1998 John E. Bossom
- *      Copyright(C) 1999,2005 Pthreads-win32 contributors
- *
- *      Contact Email: rpj@callisto.canberra.edu.au
- *
- *      The original list of contributors to the Pthreads-win32 project
- *      is contained in the file CONTRIBUTORS.ptw32 included with the
- *      source code distribution. The list can also be seen at the
- *      following World Wide Web location:
- *      http://sources.redhat.com/pthreads-win32/contributors.html
- *
- *      This library is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU Lesser General Public
- *      License as published by the Free Software Foundation; either
- *      version 2 of the License, or (at your option) any later version.
- *
- *      This library is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *      Lesser General Public License for more details.
- *
- *      You should have received a copy of the GNU Lesser General Public
- *      License along with this library in the file COPYING.LIB;
- *      if not, write to the Free Software Foundation, Inc.,
- *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
- */
-
 #include "pthread.h"
 #include "semaphore.h"
 #include "implement.h"
-
+#include "sem_common.h"
 
 int
 sem_trywait (sem_t * sem)
@@ -82,44 +33,15 @@ sem_trywait (sem_t * sem)
  * ------------------------------------------------------
  */
 {
-  NK_PROFILE_ENTRY();
-  int result = 0;
-  sem_t s = *sem;
-
-  if (s == NULL)
+  if (sem == NULL)
     {
-      result = EINVAL;
+      return EINVAL;
     }
-  else if ((result = pthread_mutex_lock (&s->lock)) == 0)
-    {
-      /* See sem_destroy.c
-       */
-      if (*sem == NULL)
-        {
-          (void) pthread_mutex_unlock (&s->lock);
-          errno = EINVAL;
-          return -1;
-        }
+ NK_PROFILE_ENTRY();
 
-      if (s->value > 0)
-        {
-          s->value--;
-        }
-      else
-        {
-          result = EAGAIN;
-        }
-
-      (void) pthread_mutex_unlock (&s->lock);
-    }
-
-  if (result != 0)
-    {
-      errno = result;
-      return -1;
-    }
-
-  NK_PROFILE_EXIT();
-  return 0;
+ int result =  nk_semaphore_try_down(sem); 
+ 
+ NK_PROFILE_EXIT();
+ return result;
 
 }				/* sem_trywait */

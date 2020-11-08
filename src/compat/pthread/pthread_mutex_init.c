@@ -78,8 +78,8 @@ pthread_mutex_init (pthread_mutex_t * mutex, const pthread_mutexattr_t * attr)
       // mx->kind = (attr == NULL || *attr == NULL ? PTHREAD_MUTEX_DEFAULT : (*attr)->kind);
       //DEBUG("pass mxkind\n");
       mx->ownerThread.p = NULL;
-
-      pte_osSemaphoreCreate(0,&mx->handle);
+      mx->sem = nk_semaphore_create(NULL, 0,0, NULL);
+      //pte_osSemaphoreCreate(0,&mx->handle);
 
     }
 

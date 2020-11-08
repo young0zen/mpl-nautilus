@@ -406,12 +406,15 @@ enum
     typedef struct pthread_key_t_ * pthread_key_t;
     typedef struct pthread_mutex_t_ * pthread_mutex_t;
     typedef struct pthread_mutexattr_t_ * pthread_mutexattr_t;
-    typedef struct pthread_cond_t_ * pthread_cond_t;
+    // typedef struct pthread_cond_t_ * pthread_cond_t;
     typedef struct pthread_condattr_t_ * pthread_condattr_t;
     typedef struct pthread_rwlock_t_ * pthread_rwlock_t;
     typedef struct pthread_rwlockattr_t_ * pthread_rwlockattr_t;
     typedef struct pthread_spinlock_t_ * pthread_spinlock_t;
-    typedef struct pthread_barrier_t_ * pthread_barrier_t;
+    //typedef struct pthread_barrier_t_ * pthread_barrier_t;
+    typedef struct nk_pthread_barrier_t_  pthread_barrier_t;
+    typedef struct nk_pthread_cond_t_ pthread_cond_t;
+
     typedef struct pthread_barrierattr_t_ * pthread_barrierattr_t;
 
     /*
@@ -955,15 +958,6 @@ enum
     int  pthread_delay_np (struct timespec * interval);
     int  pthread_num_processors_np(void);
 
-    /*
-     * Register a system time change with the library.
-     * Causes the library to perform various functions
-     * in response to the change. Should be called whenever
-     * the application's top level window receives a
-     * WM_TIMECHANGE message. It can be passed directly to
-     * pthread_create() as a new thread if desired.
-     */
-    void *  pthread_timechange_handler_np(void *);
 
 #endif /*PTE_LEVEL >= PTE_LEVEL_MAX - 1 */
 

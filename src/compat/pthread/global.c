@@ -50,8 +50,6 @@ pte_thread_t * pte_threadReuseTop = PTE_THREAD_REUSE_EMPTY;
 pte_thread_t * pte_threadReuseBottom = PTE_THREAD_REUSE_EMPTY;
 pthread_key_t pte_selfThreadKey = NULL;
 pthread_key_t pte_cleanupKey = NULL;
-pthread_cond_t pte_cond_list_head = NULL;
-pthread_cond_t pte_cond_list_tail = NULL;
 
 int pte_concurrency = 0;
 

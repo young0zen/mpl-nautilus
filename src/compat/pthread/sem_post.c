@@ -53,7 +53,7 @@
 #include "pthread.h"
 #include "semaphore.h"
 #include "implement.h"
-
+#include "sem_common.h"
 
 int
 sem_post (sem_t * sem)
@@ -82,52 +82,8 @@ sem_post (sem_t * sem)
  * ------------------------------------------------------
  */
 {
-  NK_PROFILE_ENTRY();
-  int result = 0;
-  sem_t s = *sem;
-
-  if (s == NULL)
-    {
-      result = EINVAL;
-    }
-  else if ((result = pthread_mutex_lock (&s->lock)) == 0)
-    {
-      /* See sem_destroy.c
-       */
-      if (*sem == NULL)
-        {
-          (void) pthread_mutex_unlock (&s->lock);
-          result = EINVAL;
-          return -1;
-        }
-
-      if (s->value < SEM_VALUE_MAX)
-        {
-          pte_osResult osResult = pte_osSemaphorePost(s->sem, 1);
-
-          if (++s->value <= 0
-              && (osResult != PTE_OS_OK))
-            {
-              s->value--;
-              result = EINVAL;
-            }
-
-        }
-      else
-        {
-          result = ERANGE;
-        }
-
-      (void) pthread_mutex_unlock (&s->lock);
-    }
-
-  if (result != 0)
-    {
-      errno = result;
-      return -1;
-    }
-
-  NK_PROFILE_EXIT();
-  return 0;
-
+   NK_PROFILE_ENTRY();
+   nk_semaphore_up(sem);
+   NK_PROFILE_EXIT();
+   return 0;
 }				/* sem_post */

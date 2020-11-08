@@ -53,11 +53,14 @@ typedef  nk_thread_fun_t pte_osThreadEntryPoint;
 //typedef  struct thread_with_signal* pte_osThreadHandle;
 typedef nk_thread_id_t pte_osThreadHandle;
 
+typedef struct nk_semaphore* pte_osSemaphoreHandle;
+/*
 #if TICKET_LOCK
 typedef struct ticket_semaphore* pte_osSemaphoreHandle;
 #else
 typedef struct psemaphore* pte_osSemaphoreHandle;
 #endif
+*/
 typedef enum _pthread_signal{
   NK_THREAD_NORM,
   NK_THREAD_CANCEL

@@ -54,7 +54,6 @@
 int
 pthread_mutex_unlock (pthread_mutex_t * mutex)
 {
-  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_mutex_t mx;
 
@@ -86,10 +85,7 @@ pthread_mutex_unlock (pthread_mutex_t * mutex)
                   /*
                    * Someone may be waiting on that mutex.
                    */
-                  if (pte_osSemaphorePost(mx->handle,1) != PTE_OS_OK)
-                    {
-                      result = EINVAL;
-                    }
+	          nk_semaphore_up(mx->sem);
                 }
             }
           else
@@ -111,11 +107,7 @@ pthread_mutex_unlock (pthread_mutex_t * mutex)
 
                   if (PTE_ATOMIC_EXCHANGE (&mx->lock_idx,0) < 0)
                     {
-                      if (pte_osSemaphorePost(mx->handle,1) != PTE_OS_OK)
-                        {
-                          result = EINVAL;
-                        }
-
+                       nk_semaphore_up(mx->sem);
                     }
                 }
             }
@@ -130,6 +122,5 @@ pthread_mutex_unlock (pthread_mutex_t * mutex)
       result = EINVAL;
     }
 
-  NK_PROFILE_EXIT();
   return (result);
 }

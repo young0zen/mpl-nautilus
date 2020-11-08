@@ -40,9 +40,6 @@
  *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
-/* #include <stdio.h> */
-/* #include <stdlib.h> */
-/* #include <string.h> */
 #include <nautilus/nautilus.h>
 #include <nautilus/naut_string.h>
 #include "pthread.h"
@@ -52,7 +49,6 @@
 int
 pthread_mutex_destroy (pthread_mutex_t * mutex)
 {
-  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_mutex_t mx;
 
@@ -94,7 +90,7 @@ pthread_mutex_destroy (pthread_mutex_t * mutex)
 
               if (result == 0)
                 {
-                  pte_osSemaphoreDelete(mx->handle);
+                  nk_semaphore_release(mx->sem);
 
                   free(mx);
 
@@ -152,6 +148,5 @@ pthread_mutex_destroy (pthread_mutex_t * mutex)
 
     }
 
-  NK_PROFILE_EXIT();
   return (result);
 }
