@@ -88,6 +88,7 @@ nk_register_shell_cmd(nas_mg_impl);
 int program_MG_profile(char *_, void *__){
    
 #ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_clear();
       nk_instrument_start();
 #endif      
       program_MG(_,__);

@@ -99,6 +99,20 @@ static struct shell_cmd_impl nas_lu_impl = {
 };
 nk_register_shell_cmd(nas_lu_impl);
 
+int program_LU_profile(char *_, void *__){
+   
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_clear();
+      nk_instrument_start();
+#endif      
+      program_LU(_,__);
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_end();
+      nk_instrument_query();
+#endif
+return 0;
+}
+
 int program_LU(char * _buf, void *_priv) {
 
 /*--------------------------------------------------------------------

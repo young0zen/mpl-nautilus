@@ -72,13 +72,31 @@ static void z_solve_cell(void);
 
 
 static int program_BT(char *__buf, void* __priv);
+int program_BT_profile(char *_, void* __);
 
 static struct shell_cmd_impl nas_bt_impl = {
     .cmd      = "nas-bt",
     .help_str = "NAS parallel benchmark BT",
-    .handler  = program_BT,
+    .handler  = program_BT_profile,
 };
 nk_register_shell_cmd(nas_bt_impl);
+
+
+int program_BT_profile(char *_, void *__){
+   
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_clear();
+      nk_instrument_start();
+#endif      
+      program_BT(_,__);
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_end();
+      nk_instrument_query();
+#endif
+return 0;
+}
+
+
 /*--------------------------------------------------------------------
       program BT
 c-------------------------------------------------------------------*/

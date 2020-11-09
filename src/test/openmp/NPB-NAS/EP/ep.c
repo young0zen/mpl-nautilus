@@ -70,14 +70,29 @@ c   not affect the results.
 */
 
 static int program_EP(char *buf, void* priv);
+int program_EP_profile(char *_, void *__);
 
 static struct shell_cmd_impl nas_ep_impl = {
     .cmd      = "nas-ep",
     .help_str = "NAS parallel benchmark EP",
-    .handler  = program_EP,
+    .handler  = program_EP_profile,
 };
 nk_register_shell_cmd(nas_ep_impl);
 
+
+int program_EP_profile(char *_, void *__){
+   
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_clear();
+      nk_instrument_start();
+#endif      
+      program_EP(_,__);
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_end();
+      nk_instrument_query();
+#endif
+return 0;
+}
 
 int program_EP(char *buf, void* priv) {
 

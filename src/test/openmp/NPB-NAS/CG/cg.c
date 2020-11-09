@@ -107,16 +107,34 @@ static void vecset(int n, double v[], int iv[], int *nzv, int i, double val);
       program cg
 --------------------------------------------------------------------*/
 static int program_CG(char *__buf, void* __priv);
+int program_CG_profile(char *_, void *__);
 
 static struct shell_cmd_impl nas_cg_impl = {
     .cmd      = "nas-cg",
     .help_str = "NAS parallel benchmark CG",
-    .handler  = program_CG,
+    .handler  = program_CG_profile,
 };
 nk_register_shell_cmd(nas_cg_impl);
 /*--------------------------------------------------------------------
       program CG
 c-------------------------------------------------------------------*/
+
+int program_CG_profile(char *_, void *__){
+   
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_clear();
+      nk_instrument_start();
+#endif      
+      program_CG(_,__);
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_end();
+      nk_instrument_query();
+#endif
+return 0;
+}
+
+
+
 static int program_CG(char *__buf, void* __priv) {
 
 

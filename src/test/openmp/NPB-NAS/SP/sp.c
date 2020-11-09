@@ -66,13 +66,29 @@ static void z_solve(void);
        program SP
 c-------------------------------------------------------------------*/
 static int program_SP(char *_buf, void* _priv);
+int program_SP_profile(char *_, void *__);
 
 static struct shell_cmd_impl nas_sp_impl = {
     .cmd      = "nas-sp",
     .help_str = "NAS parallel benchmark SP",
-    .handler  = program_SP,
+    .handler  = program_SP_profile,
 };
 nk_register_shell_cmd(nas_sp_impl);
+
+
+int program_SP_profile(char *_, void *__){
+   
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_clear();
+      nk_instrument_start();
+#endif      
+      program_SP(_,__);
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_end();
+      nk_instrument_query();
+#endif
+return 0;
+}
 
 
 int program_SP(char* _buf, void * _priv) {

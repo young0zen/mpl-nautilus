@@ -585,13 +585,29 @@ void rank( int iteration )
 
 
 static int program_IS(char *_buf, void* _priv);
+int program_IS_profile(char *_, void *__);
+	
 
 static struct shell_cmd_impl nas_is_impl = {
     .cmd      = "nas-is",
     .help_str = "NAS parallel benchmark IS",
-    .handler  = program_IS,
+    .handler  = program_IS_profile,
 };
 nk_register_shell_cmd(nas_is_impl);
+
+int program_IS_profile(char *_, void *__){
+   
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_clear();
+      nk_instrument_start();
+#endif      
+      program_IS(_,__);
+#ifdef NAUT_CONFIG_PROFILE
+      nk_instrument_end();
+      nk_instrument_query();
+#endif
+return 0;
+}
 
 int program_IS(char * _buf, void *_priv) {
 
