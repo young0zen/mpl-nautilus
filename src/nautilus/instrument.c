@@ -479,7 +479,7 @@ nk_instrument_query (void)
 
             if (data->call_count > 0) {
 
-		printk("\tpercent: %f\t avg time(msec/1000): %f \tFunc:%s\n",(float)(data->call_count*data->avg_nsec)/total_nsec, (float)data->avg_nsec/1000, func);
+		printk("\tpercent(%%): %f %% \t abs time(msec): %f \t avg time (msec): %f\n",((float)data->call_count*data->avg_nsec)/total_nsec*100, (float)data->avg_nsec*data->call_count/1000, (float)data->avg_nsec/1000);
               /*  printk("\t%lu.%lu\% Func: %s\n\tCount: %16u Lat - Avg: %16llunsec Max: %16llunsec Min: %16llunsec\n", 
                         data->total_count / total_nsec,
                         data->total_count % total_nsec,
