@@ -58,20 +58,13 @@ pthread_cond_timedwait (pthread_cond_t * c,
 	goto bcout;
 	
        }
-
         
         NK_UNLOCK(&c->lock); 
-
-	DEBUG("starting multiple sleep\n");
-
+       
 	ssem_timedwait(c->sem, timeout_ns-(now-start));
-        //nk_wait_queue_sleep_extended_multiple(2,queues,condchecks,states);
-
-        DEBUG("returned from multiple sleep and checking\n");
-
  
-        //nk_wait_queue_sleep(c->wait_queue);
         NK_LOCK(&c->lock);
+	
 
         if (bc != *(volatile unsigned*)&(c->bcast_seq)) {
             goto bcout;
@@ -96,8 +89,8 @@ bcout:
     NK_PROFILE_EXIT();
 
     return result;
-
 }
+
 int
 pthread_cond_wait (pthread_cond_t * c, pthread_mutex_t * l)
 {
@@ -124,9 +117,10 @@ pthread_cond_wait (pthread_cond_t * c, pthread_mutex_t * l)
     do {
 
         NK_UNLOCK(&c->lock);
-	ssem_post(c->sem, 0);
-        //nk_wait_queue_sleep(c->wait_queue);
-        NK_LOCK(&c->lock);
+	
+	ssem_wait(c->sem);
+        
+	NK_LOCK(&c->lock);
 
         if (bc != *(volatile unsigned*)&(c->bcast_seq)) {
             goto bcout;

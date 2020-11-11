@@ -1,1 +1,2 @@
-obj-y +=ssem.o
+
+obj-y+= ssem.o

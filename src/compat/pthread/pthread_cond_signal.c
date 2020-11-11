@@ -2,24 +2,21 @@
  * pthread_cond_signal.c
  *
  */
-
 #include "pthread.h"
 #include "implement.h"
 #include "pthread_cond_common.h"
 	
-
 	
 int
 pthread_cond_signal (pthread_cond_t * c)
 {
-	
+    	
     if (c == NULL)
     {
       return EINVAL;
     }
 
     NK_PROFILE_ENTRY();
-
     NK_LOCK(&c->lock);
 
     // do we have anyone to signal?
@@ -27,12 +24,10 @@ pthread_cond_signal (pthread_cond_t * c)
 
         ++c->wakeup_seq;
 
-        DEBUG_PRINT("Condvar signaling on (%p)\n", (void*)c);
+        DEBUG("Condvar signaling on (%p)\n", (void*)c);
+	ssem_post(c->sem,1);
 
-        ssem_post(c->sem, 1);
-	//nk_wait_queue_wake_one(c->wait_queue);
-
-    }
+    } 
 
     NK_UNLOCK(&c->lock);
     NK_PROFILE_EXIT();
@@ -63,8 +58,7 @@ pthread_cond_broadcast (pthread_cond_t * c)
 
         DEBUG_PRINT("Condvar broadcasting on (%p) (core=%u)\n", (void*)c, my_cpu_id());
         ssem_post(c->sem, c->nwaiters);
-	//nk_wait_queue_wake_all(c->wait_queue);
-        return 0;
+	return 0;
 
     }
 
