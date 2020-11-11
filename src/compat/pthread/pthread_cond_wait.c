@@ -58,44 +58,17 @@ pthread_cond_timedwait (pthread_cond_t * c,
 	goto bcout;
 	
        }
-        nk_timer_t *t = nk_timer_get_thread_default();
-
-        if (!t) {
-            ERROR("Failed to acquire timer for thread...\n");
-            return errno;
-        }
-
-        struct op o = {  .timer = t };
-
-        // the queues we will simultaneously be on
-        nk_wait_queue_t *queues[2] = { c->wait_queue, t->waitq} ;
-        // their condition checks no_check means sleep until explicit wakeup
-        int (*condchecks[2])() = { no_check, check_timer };
-        // and state
-        void *states[2] = { &o, &o };
-
-        //DEBUG("down sleep / timeout %s\n",s->name);
-
-        if (nk_timer_set(t, timeout_ns - (now-start), NK_TIMER_WAIT_ONE, 0, 0, 0)) {
-            ERROR("Cannot set timer\n");
-            return errno;
-        }
-
-        if (nk_timer_start(t)) {
-            ERROR("Cannot start timer\n");
-            return errno;
-        }
 
         
         NK_UNLOCK(&c->lock); 
 
 	DEBUG("starting multiple sleep\n");
 
-        nk_wait_queue_sleep_extended_multiple(2,queues,condchecks,states);
+	ssem_timedwait(c->sem, timeout_ns-(now-start));
+        //nk_wait_queue_sleep_extended_multiple(2,queues,condchecks,states);
 
         DEBUG("returned from multiple sleep and checking\n");
 
-	nk_timer_cancel(t);
  
         //nk_wait_queue_sleep(c->wait_queue);
         NK_LOCK(&c->lock);
@@ -151,7 +124,8 @@ pthread_cond_wait (pthread_cond_t * c, pthread_mutex_t * l)
     do {
 
         NK_UNLOCK(&c->lock);
-        nk_wait_queue_sleep(c->wait_queue);
+	ssem_post(c->sem, 0);
+        //nk_wait_queue_sleep(c->wait_queue);
         NK_LOCK(&c->lock);
 
         if (bc != *(volatile unsigned*)&(c->bcast_seq)) {

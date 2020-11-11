@@ -33,11 +33,8 @@ pthread_cond_init (pthread_cond_t * c, const pthread_condattr_t * attr)
     memset(c, 0, sizeof(pthread_cond_t));
 
     snprintf(buf,NK_WAIT_QUEUE_NAME_LEN,"condvar%lu-wait",__sync_fetch_and_add(&count,1));
-    c->wait_queue = nk_wait_queue_create(buf);
-    if (!c->wait_queue) {
-        ERROR("Could not create wait queue for cond var\n");
-        return EINVAL;
-    }
+    ssem_init(c->sem,0);
+    //c->wait_queue = nk_wait_queue_create(buf);
 
     NK_LOCK_INIT(&c->lock);
     

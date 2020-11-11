@@ -29,7 +29,8 @@ pthread_cond_signal (pthread_cond_t * c)
 
         DEBUG_PRINT("Condvar signaling on (%p)\n", (void*)c);
 
-        nk_wait_queue_wake_one(c->wait_queue);
+        ssem_post(c->sem, 1);
+	//nk_wait_queue_wake_one(c->wait_queue);
 
     }
 
@@ -61,7 +62,8 @@ pthread_cond_broadcast (pthread_cond_t * c)
         NK_UNLOCK(&c->lock);
 
         DEBUG_PRINT("Condvar broadcasting on (%p) (core=%u)\n", (void*)c, my_cpu_id());
-        nk_wait_queue_wake_all(c->wait_queue);
+        ssem_post(c->sem, c->nwaiters);
+	//nk_wait_queue_wake_all(c->wait_queue);
         return 0;
 
     }
