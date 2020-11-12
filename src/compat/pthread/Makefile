@@ -1,5 +1,6 @@
 NK_LIB =\
-	nk/
+	nk/\
+	simple_sem/
 
 MUTEX_OBJS = \
   pthread_mutex_unlock.o \
