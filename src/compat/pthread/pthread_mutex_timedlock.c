@@ -111,6 +111,7 @@ int
 pthread_mutex_timedlock (pthread_mutex_t * mutex,
                          const struct timespec *abstime)
 {
+  NK_PROFILE_ENTRY();
   int result;
   pthread_mutex_t mx;
   uint64_t timeout_ns = abstime->tv_sec*1000000000ULL+abstime->tv_nsec;
@@ -185,6 +186,6 @@ pthread_mutex_timedlock (pthread_mutex_t * mutex,
             }
         }
     }
-
+  NK_PROFILE_EXIT();
   return 0;
 }

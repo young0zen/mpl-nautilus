@@ -49,6 +49,8 @@
 int
 pthread_mutex_destroy (pthread_mutex_t * mutex)
 {
+
+  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_mutex_t mx;
 
@@ -147,6 +149,6 @@ pthread_mutex_destroy (pthread_mutex_t * mutex)
       pte_osMutexUnlock(pte_mutex_test_init_lock);
 
     }
-
+  NK_PROFILE_EXIT();
   return (result);
 }

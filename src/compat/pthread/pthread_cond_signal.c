@@ -63,6 +63,7 @@ pthread_cond_broadcast (pthread_cond_t * c)
 
         DEBUG_PRINT("Condvar broadcasting on (%p) (core=%u)\n", (void*)c, my_cpu_id());
         ssem_post(c->sem, c->nwaiters);
+        NK_PROFILE_EXIT();
 	//nk_wait_queue_wake_all(c->wait_queue);
         return 0;
 

@@ -50,6 +50,7 @@
 int
 pthread_mutex_init (pthread_mutex_t * mutex, const pthread_mutexattr_t * attr)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_mutex_t mx;
 
@@ -84,6 +85,6 @@ pthread_mutex_init (pthread_mutex_t * mutex, const pthread_mutexattr_t * attr)
     }
 
   *mutex = mx;
-
+   NK_PROFILE_EXIT();
   return (result);
 }
