@@ -1,6 +1,7 @@
 #ifndef _NAS_LOG_H_
 #define _NAS_LOG_H_
 #include "frexp.h"
+#include "../common.h"
 static double LOG2_HI = 0x1.62e42fee00000p-1;
 static double LOG2_LOW = 0x1.a39ef35793c76p-33;
 static double  L1 = 0x1.5555555555593p-1;
@@ -14,7 +15,8 @@ static double SQRT2_HALF = 0x1.6a09e667f3bcdp-1;
 static double fl, k, f, s, _s2,_s4,R,t1,t2,hfsq;
 
 static double log(double x){
-
+  
+  NK_PROFILE_ENTRY();
   int ki;
   double f1 = frexp(x,&ki);
  // printf("frac %f,exp %d\n", f1, ki);
@@ -34,6 +36,8 @@ t1 = _s2 * (L1 + _s4 * (L3 + _s4 * (L5 + _s4 * L7)));
 t2 = _s4 * (L2 + _s4 * (L4 + _s4 * L6));
 R = t1 + t2;
 hfsq = 0.5 * f * f;
+
+NK_PROFILE_EXIT();
 return k * LOG2_HI - ((hfsq - (s * (hfsq + R) + k * LOG2_LOW)) - f);
 }
 

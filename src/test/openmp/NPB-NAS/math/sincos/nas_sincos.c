@@ -171,6 +171,7 @@ do_sincos (double a, double da, int4 n)
 double
 __sin (double x)
 {
+  NK_PROFILE_ENTRY();
   double t=0, a=0, da=0;
   mynumber u;
   int4 k=0, m=0, n=0;
@@ -225,7 +226,7 @@ __sin (double x)
 //	__set_errno (EDOM);
       retval = x / x;
     }
-
+  NK_PROFILE_EXIT();
   return retval;
 }
 
@@ -238,6 +239,7 @@ __sin (double x)
 double
 __cos (double x)
 {
+  NK_PROFILE_ENTRY();
   double y=0, a=0, da=0;
   mynumber u;
   int4 k=0, m=0, n=0;
@@ -289,7 +291,7 @@ __cos (double x)
 	//__set_errno (EDOM);
       retval = x / x;		/* |x| > 2^1024 */
     }
-
+  NK_PROFILE_EXIT();
   return retval;
 }
 

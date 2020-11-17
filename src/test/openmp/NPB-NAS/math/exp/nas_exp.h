@@ -2,6 +2,7 @@
 #ifndef _NAS_EXP_H_
 #define _NAS_EXP_H_
 
+#include "../common.h"
 static      double
 one	= 1.0,
 halF[2]	= {0.5,-0.5,},
@@ -26,6 +27,7 @@ P5   =  4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
 
 static double exp(double x)	/* default IEEE double exp */
 {
+        NK_PROFILE_ENTRY();
 	double y,hi,lo,c,t;
 	int k,xsb;
 	unsigned hx;
@@ -59,7 +61,8 @@ static double exp(double x)	/* default IEEE double exp */
 	    if(huge+x>one) return one+x;/* trigger inexact */
 	}
 	else k = 0;
-
+        
+       NK_PROFILE_EXIT();
     /* x is now in primary range */
 	t  = x*x;
 	c  = x - t*(P1+t*(P2+t*(P3+t*(P4+t*P5))));

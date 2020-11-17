@@ -14,7 +14,7 @@
 
 #include <nautilus/nautilus.h>
 #include <compat/linux/sysconf.h>
-
+#include <nautilus/shell.h>
 #define ERROR(fmt, args...) ERROR_PRINT("sysconf: " fmt, ##args)
 
 #define INFO(fmt, args...)   INFO_PRINT("sysconf: " fmt, ##args)
@@ -33,6 +33,37 @@
 //#define _SC_THREAD_THREADS_MAX 76
 //#define _SC_THREAD_STACK_MIN 75
 //#define _SC_NPROCESSORS_ONLN 80
+static long avaiable_cores = -1;
+
+long nk_get_avaible_cores(){
+   if (avaiable_cores < 0)
+    return (long) nk_get_num_cpus();
+   else return  avaiable_cores;
+}
+
+
+static int handle_omp_num_threads(char* buf, void* priv);
+
+static struct shell_cmd_impl omp_num_threads_impl = {
+    .cmd      = "omp_num_threads",
+    .help_str = "set omp number of threads",
+    .handler  = handle_omp_num_threads,
+};
+nk_register_shell_cmd(omp_num_threads_impl);
+
+
+static int handle_omp_num_threads(char* buf, void* priv){
+
+    long cores;
+    if((sscanf(buf, "omp_num_threads %d", &cores) !=1))	{
+      nk_vc_printf("Don't understand %s please input single number\n", buf);
+      return -1;
+    }
+    avaiable_cores = cores;
+    return 0;
+
+}
+
 
 long int
 __sysconf (int name)
@@ -54,7 +85,7 @@ __sysconf (int name)
       return 0x4000;
     case _SC_NPROCESSORS_ONLN:
    DEBUG("sc_nprocessors_onln \n");
-      return (long) nk_get_num_cpus();
+      return (long) nk_get_avaible_cores();
 //    case 84:
       //important to set default number of threads
 //      DEBUG("unknown but possibly related to number of cpu %d\n", name);    
