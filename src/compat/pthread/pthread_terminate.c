@@ -50,44 +50,46 @@
 
 void pthread_terminate(void)
 {
-  if (pte_processInitialized)
-    {
-      pte_thread_t * tp, * tpNext;
+  nk_thread_exit(NULL);
 
-      if (pte_selfThreadKey != NULL)
-        {
-          /*
-           * Release pte_selfThreadKey
-           */
-          pthread_key_delete (pte_selfThreadKey);
+  /* if (pte_processInitialized) */
+  /*   { */
+  /*     pte_thread_t * tp, * tpNext; */
 
-          pte_selfThreadKey = NULL;
-        }
+  /*     if (pte_selfThreadKey != NULL) */
+  /*       { */
+  /*         /\* */
+  /*          * Release pte_selfThreadKey */
+  /*          *\/ */
+  /*         pthread_key_delete (pte_selfThreadKey); */
 
-      if (pte_cleanupKey != NULL)
-        {
-          /*
-           * Release pte_cleanupKey
-           */
-          pthread_key_delete (pte_cleanupKey);
+  /*         pte_selfThreadKey = NULL; */
+  /*       } */
 
-          pte_cleanupKey = NULL;
-        }
+  /*     if (pte_cleanupKey != NULL) */
+  /*       { */
+  /*         /\* */
+  /*          * Release pte_cleanupKey */
+  /*          *\/ */
+  /*         pthread_key_delete (pte_cleanupKey); */
 
-      pte_osMutexLock (pte_thread_reuse_lock);
+  /*         pte_cleanupKey = NULL; */
+  /*       } */
+
+  /*     pte_osMutexLock (pte_thread_reuse_lock); */
 
 
-      tp = pte_threadReuseTop;
-      while (tp != PTE_THREAD_REUSE_EMPTY)
-        {
-          tpNext = tp->prevReuse;
-          free (tp);
-          tp = tpNext;
-        }
+  /*     tp = pte_threadReuseTop; */
+  /*     while (tp != PTE_THREAD_REUSE_EMPTY) */
+  /*       { */
+  /*         tpNext = tp->prevReuse; */
+  /*         free (tp); */
+  /*         tp = tpNext; */
+  /*       } */
 
-      pte_osMutexUnlock(pte_thread_reuse_lock);
+  /*     pte_osMutexUnlock(pte_thread_reuse_lock); */
 
-      pte_processInitialized = PTE_FALSE;
-    }
+  /*     pte_processInitialized = PTE_FALSE; */
+  /*   } */
 
 }

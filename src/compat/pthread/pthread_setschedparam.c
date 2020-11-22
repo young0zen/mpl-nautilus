@@ -48,6 +48,7 @@ int
 pthread_setschedparam (pthread_t thread, int policy,
                        const struct sched_param *param)
 {
+  BOGUS();
   int result;
 
   /* Validate the thread id. */
@@ -76,40 +77,41 @@ pthread_setschedparam (pthread_t thread, int policy,
 int
 pte_setthreadpriority (pthread_t thread, int policy, int priority)
 {
-  int prio;
-  int result;
-  pte_thread_t * tp = (pte_thread_t *) thread.p;
+  return 0;
+  /* int prio; */
+  /* int result; */
+  /* pte_thread_t * tp = (pte_thread_t *) thread.p; */
 
-  prio = priority;
+  /* prio = priority; */
 
-  /* Validate priority level. */
-  if (prio < sched_get_priority_min (policy) ||
-      prio > sched_get_priority_max (policy))
-    {
-      return EINVAL;
-    }
+  /* /\* Validate priority level. *\/ */
+  /* if (prio < sched_get_priority_min (policy) || */
+  /*     prio > sched_get_priority_max (policy)) */
+  /*   { */
+  /*     return EINVAL; */
+  /*   } */
 
-  result = pthread_mutex_lock (&tp->threadLock);
+  /* result = pthread_mutex_lock (&tp->threadLock); */
 
-  if (0 == result)
-    {
-      /* If this fails, the current priority is unchanged. */
+  /* if (0 == result) */
+  /*   { */
+  /*     /\* If this fails, the current priority is unchanged. *\/ */
 
-      if (0 != pte_osThreadSetPriority(tp->threadId, prio))
-        {
-          result = EINVAL;
-        }
-      else
-        {
-          /*
-           * Must record the thread's sched_priority as given,
-           * not as finally adjusted.
-           */
-          tp->sched_priority = priority;
-        }
+  /*     if (0 != pte_osThreadSetPriority(tp->threadId, prio)) */
+  /*       { */
+  /*         result = EINVAL; */
+  /*       } */
+  /*     else */
+  /*       { */
+  /*         /\* */
+  /*          * Must record the thread's sched_priority as given, */
+  /*          * not as finally adjusted. */
+  /*          *\/ */
+  /*         tp->sched_priority = priority; */
+  /*       } */
 
-      (void) pthread_mutex_unlock (&tp->threadLock);
-    }
+  /*     (void) pthread_mutex_unlock (&tp->threadLock); */
+  /*   } */
 
-  return result;
+  /* return result; */
 }

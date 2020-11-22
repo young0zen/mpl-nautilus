@@ -76,67 +76,68 @@ pthread_key_delete (pthread_key_t key)
  * ------------------------------------------------------
  */
 {
-  NK_PROFILE_ENTRY();
-  int result = 0;
+  return nk_tls_key_delete(key);
+  /* NK_PROFILE_ENTRY(); */
+  /* int result = 0; */
 
-  if (key != NULL)
-    {
-      if (key->threads != NULL &&
-          key->destructor != NULL &&
-          pthread_mutex_lock (&(key->keyLock)) == 0)
-        {
-          ThreadKeyAssoc *assoc;
-          /*
-           * Run through all Thread<-->Key associations
-           * for this key.
-           *
-           * While we hold at least one of the locks guarding
-           * the assoc, we know that the assoc pointed to by
-           * key->threads is valid.
-           */
-          while ((assoc = (ThreadKeyAssoc *) key->threads) != NULL)
-            {
-              pte_thread_t * thread = assoc->thread;
+  /* if (key != NULL) */
+  /*   { */
+  /*     if (key->threads != NULL && */
+  /*         key->destructor != NULL && */
+  /*         pthread_mutex_lock (&(key->keyLock)) == 0) */
+  /*       { */
+  /*         ThreadKeyAssoc *assoc; */
+  /*         /\* */
+  /*          * Run through all Thread<-->Key associations */
+  /*          * for this key. */
+  /*          * */
+  /*          * While we hold at least one of the locks guarding */
+  /*          * the assoc, we know that the assoc pointed to by */
+  /*          * key->threads is valid. */
+  /*          *\/ */
+  /*         while ((assoc = (ThreadKeyAssoc *) key->threads) != NULL) */
+  /*           { */
+  /*             pte_thread_t * thread = assoc->thread; */
 
-              if (assoc == NULL)
-                {
-                  /* Finished */
-                  break;
-                }
+  /*             if (assoc == NULL) */
+  /*               { */
+  /*                 /\* Finished *\/ */
+  /*                 break; */
+  /*               } */
 
-              if (pthread_mutex_lock (&(thread->threadLock)) == 0)
-                {
-                  /*
-                   * Since we are starting at the head of the key's threads
-                   * chain, this will also point key->threads at the next assoc.
-                   * While we hold key->keyLock, no other thread can insert
-                   * a new assoc via pthread_setspecific.
-                   */
-                  pte_tkAssocDestroy (assoc);
-                  (void) pthread_mutex_unlock (&(thread->threadLock));
-                }
-              else
-                {
-                  /* Thread or lock is no longer valid? */
-                  pte_tkAssocDestroy (assoc);
-                }
-            }
-          pthread_mutex_unlock (&(key->keyLock));
-        }
+  /*             if (pthread_mutex_lock (&(thread->threadLock)) == 0) */
+  /*               { */
+  /*                 /\* */
+  /*                  * Since we are starting at the head of the key's threads */
+  /*                  * chain, this will also point key->threads at the next assoc. */
+  /*                  * While we hold key->keyLock, no other thread can insert */
+  /*                  * a new assoc via pthread_setspecific. */
+  /*                  *\/ */
+  /*                 pte_tkAssocDestroy (assoc); */
+  /*                 (void) pthread_mutex_unlock (&(thread->threadLock)); */
+  /*               } */
+  /*             else */
+  /*               { */
+  /*                 /\* Thread or lock is no longer valid? *\/ */
+  /*                 pte_tkAssocDestroy (assoc); */
+  /*               } */
+  /*           } */
+  /*         pthread_mutex_unlock (&(key->keyLock)); */
+  /*       } */
 
-      pte_osTlsFree (key->key);
-      if (key->destructor != NULL)
-        {
-          /* A thread could be holding the keyLock */
-          while (EBUSY == (result = pthread_mutex_destroy (&(key->keyLock))))
-            {
-              pte_osThreadSleep(1); // Ugly.
-            }
-        }
+  /*     pte_osTlsFree (key->key); */
+  /*     if (key->destructor != NULL) */
+  /*       { */
+  /*         /\* A thread could be holding the keyLock *\/ */
+  /*         while (EBUSY == (result = pthread_mutex_destroy (&(key->keyLock)))) */
+  /*           { */
+  /*             pte_osThreadSleep(1); // Ugly. */
+  /*           } */
+  /*       } */
 
-      free (key);
-    }
+  /*     free (key); */
+  /*   } */
 
-  NK_PROFILE_EXIT();
-  return (result);
+  /* NK_PROFILE_EXIT(); */
+  /* return (result); */
 }

@@ -85,17 +85,18 @@ typedef struct pte_thread_t_ pte_thread_t;
 
 struct pte_thread_t_
   {
-    pte_osThreadHandle threadId;      /* OS specific thread handle */
+nk_thread_id_t tid;
+    // pte_osThreadHandle threadId;      /* OS specific thread handle */
     pthread_t ptHandle;		/* This thread's permanent pthread_t handle */
-    pte_thread_t * prevReuse;	/* Links threads on reuse stack */
+    //pte_thread_t * prevReuse;	/* Links threads on reuse stack */
     volatile PThreadState state;
     void *exitStatus;
-    void *parms;
-    int ptErrno;
-    int detachState;
-    pthread_mutex_t threadLock;	/* Used for serialised access to public thread state */
+    //void *parms;
+    //int ptErrno;
+    //int detachState;
+    //pthread_mutex_t threadLock;	/* Used for serialised access to public thread state */
     int sched_priority;		/* As set, not as currently is */
-    pthread_mutex_t cancelLock;	/* Used for async-cancel safety */
+    //pthread_mutex_t cancelLock;	/* Used for async-cancel safety */
     int cancelState;
     int cancelType;
     int cancelEvent;
@@ -104,8 +105,8 @@ struct pte_thread_t_
 #endif	/* PTE_CLEANUP_C */
 int implicit:
     1;
-    void *keys;
-    void *nextAssoc;
+    //void *keys;
+    //void *nextAssoc;
   };
 
 

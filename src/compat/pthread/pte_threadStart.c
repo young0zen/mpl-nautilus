@@ -93,14 +93,14 @@ int pte_threadStart (void *vthreadParms, void ** out)
   void * status = (void *) 0;
 
   self = threadParms->tid;
-  sp = (pte_thread_t *) self.p;
+  //sp = (pte_thread_t *) self.p;
   start = threadParms->start;
   arg = threadParms->arg;
 //  free (threadParms);
 
-  pthread_setspecific (pte_selfThreadKey, sp);
+  pthread_setspecific (pte_selfThreadKey, self);
 
-  sp->state = PThreadStateRunning;
+  //sp->state = PThreadStateRunning;
 
 #ifdef PTE_CLEANUP_C
 

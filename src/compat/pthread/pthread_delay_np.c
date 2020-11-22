@@ -90,6 +90,7 @@
 int
 pthread_delay_np (struct timespec *interval)
 {
+  BOGUS();
   NK_PROFILE_ENTRY();
   unsigned int wait_time;
   unsigned int secs_in_millisecs;
@@ -104,10 +105,12 @@ pthread_delay_np (struct timespec *interval)
 
   if (interval->tv_sec == 0L && interval->tv_nsec == 0L)
     {
-      pthread_testcancel ();
+      nk_yield();
+      return 0;
+      /*pthread_testcancel ();
       pte_osThreadSleep (1);
       pthread_testcancel ();
-      return (0);
+      return (0);*/
     }
 
   /* convert secs to millisecs */
@@ -118,50 +121,7 @@ pthread_delay_np (struct timespec *interval)
 
   wait_time = secs_in_millisecs + millisecs;
 
-  if (NULL == (self = pthread_self ()).p)
-    {
-      return ENOMEM;
-    }
-
-  sp = (pte_thread_t *) self.p;
-
-  if (sp->cancelState == PTHREAD_CANCEL_ENABLE)
-    {
-      pte_osResult cancelStatus;
-      /*
-       * Async cancelation won't catch us until wait_time is up.
-       * Deferred cancelation will cancel us immediately.
-       */
-      cancelStatus = pte_osThreadCheckCancel(sp->threadId);
-
-      if (cancelStatus == PTE_OS_INTERRUPTED)
-        {
-          /*
-           * Canceling!
-           */
-          (void) pthread_mutex_lock (&sp->cancelLock);
-          if (sp->state < PThreadStateCanceling)
-            {
-              sp->state = PThreadStateCanceling;
-              sp->cancelState = PTHREAD_CANCEL_DISABLE;
-              (void) pthread_mutex_unlock (&sp->cancelLock);
-
-              pte_throw (PTE_EPS_CANCEL);
-            }
-
-          (void) pthread_mutex_unlock (&sp->cancelLock);
-          return ESRCH;
-        }
-      else if (cancelStatus != PTE_OS_OK)
-        {
-          return EINVAL;
-        }
-    }
-  else
-
-    {
-      pte_osThreadSleep (wait_time);
-    }
+  pte_osThreadSleep (wait_time);
 
   NK_PROFILE_EXIT();
   return (0);
