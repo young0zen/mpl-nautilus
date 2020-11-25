@@ -125,14 +125,15 @@ int pthread_test_condvar5()
   struct _timeb currSysTime;
   const unsigned int NANOSEC_PER_MILLISEC = 1000000;
 
-  cvthing.notbusy = PTHREAD_COND_INITIALIZER;
+//cvthing.notbusy = PTHREAD_COND_INITIALIZER;
   cvthing.lock = PTHREAD_MUTEX_INITIALIZER;
 
+  pthread_cond_init(&cvthing.notbusy,NULL);
   cvthing.shared = 0;
 
-  assert((t[0] = pthread_self()).p != NULL);
+  assert((t[0] = pthread_self()) != NULL);
 
-  assert(cvthing.notbusy == PTHREAD_COND_INITIALIZER);
+  //assert(cvthing.notbusy == PTHREAD_COND_INITIALIZER);
 
   assert(cvthing.lock == PTHREAD_MUTEX_INITIALIZER);
 
@@ -150,7 +151,7 @@ int pthread_test_condvar5()
 
   assert(pthread_cond_timedwait(&cvthing.notbusy, &cvthing.lock, &abstime) == ETIMEDOUT);
 
-  assert(cvthing.notbusy != PTHREAD_COND_INITIALIZER);
+  //assert(cvthing.notbusy != PTHREAD_COND_INITIALIZER);
 
   assert(pthread_create(&t[1], NULL, mythread, (void *) 1) == 0);
 
@@ -176,7 +177,7 @@ int pthread_test_condvar5()
 
   assert(pthread_cond_destroy(&cvthing.notbusy) == 0);
 
-  assert(cvthing.notbusy == NULL);
+  assert(&cvthing.notbusy == NULL);
 
   return 0;
 }

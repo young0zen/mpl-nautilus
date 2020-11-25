@@ -284,7 +284,13 @@ pte_osResult pte_osThreadCheckCancel(pte_osThreadHandle handle){
 /* fast yield                                        */
 /*===================================================*/
 void pte_osThreadSleep(unsigned int msecs){
-  nk_yield();
+
+ uint64_t start = nk_sched_get_realtime(), now, waitns = msecs*1000000;
+  now = start;
+  while((now - start) < waitns){
+     nk_sched_yield(0);
+     now = nk_sched_get_realtime();
+  }  
 }
 
 /*=============================================

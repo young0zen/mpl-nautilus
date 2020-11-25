@@ -48,11 +48,11 @@
 
 enum
 {
-  NUMTHREADS = 16,
-  BARRIERS = 1000
+  NUMTHREADS = 4,
+  BARRIERS = 10
 };
 
-static pthread_barrier_t barrier = NULL;
+static pthread_barrier_t barrier;
 static pthread_mutex_t mx = PTHREAD_MUTEX_INITIALIZER;
 
 static int barrierReleases[BARRIERS + 1];
@@ -63,7 +63,9 @@ func(void * barrierHeight)
   int i;
   int result;
   int serialThreads = 0;
-
+   
+  extern int printf (const char * s, ...);
+  
   for (i = 1; i < BARRIERS; i++)
     {
       result = pthread_barrier_wait(&barrier);

@@ -84,21 +84,21 @@
 
 #include "test.h"
 
-static pthread_cond_t cv = NULL;
+static pthread_cond_t cv;
 
 int pthread_test_condvar1()
 {
-  cv = NULL;
+  //cv = NULL;
 
-  assert(cv == NULL);
+  //assert(cv == NULL);
 
   assert(pthread_cond_init(&cv, NULL) == 0);
 
-  assert(cv != NULL);
+  //assert(&cv != NULL);
 
   assert(pthread_cond_destroy(&cv) == 0);
 
-  assert(cv == NULL);
+  //assert(&cv == NULL);
 
   return 0;
 }

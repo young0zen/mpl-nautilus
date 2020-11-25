@@ -1,43 +1,6 @@
 /*
  * pthread_key_create.c
  *
- * Description:
- * POSIX thread functions which implement thread-specific data (TSD).
- *
- * --------------------------------------------------------------------------
- *
- *      Pthreads-embedded (PTE) - POSIX Threads Library for embedded systems
- *      Copyright(C) 2008 Jason Schmidlapp
- *
- *      Contact Email: jschmidlapp@users.sourceforge.net
- *
- *
- *      Based upon Pthreads-win32 - POSIX Threads Library for Win32
- *      Copyright(C) 1998 John E. Bossom
- *      Copyright(C) 1999,2005 Pthreads-win32 contributors
- *
- *      Contact Email: rpj@callisto.canberra.edu.au
- *
- *      The original list of contributors to the Pthreads-win32 project
- *      is contained in the file CONTRIBUTORS.ptw32 included with the
- *      source code distribution. The list can also be seen at the
- *      following World Wide Web location:
- *      http://sources.redhat.com/pthreads-win32/contributors.html
- *
- *      This library is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU Lesser General Public
- *      License as published by the Free Software Foundation; either
- *      version 2 of the License, or (at your option) any later version.
- *
- *      This library is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *      Lesser General Public License for more details.
- *
- *      You should have received a copy of the GNU Lesser General Public
- *      License along with this library in the file COPYING.LIB;
- *      if not, write to the Free Software Foundation, Inc.,
- *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
 /* #include <stdlib.h> */
@@ -80,43 +43,46 @@ pthread_key_create (pthread_key_t * key, void (*destructor) (void *))
  * ------------------------------------------------------
  */
 {
-  NK_PROFILE_ENTRY();
-  int result = 0;
-  pthread_key_t newkey;
+  return nk_tls_key_create(key, destructor); 
+  /* NK_PROFILE_ENTRY(); */
+  
 
-  if ((newkey = (pthread_key_t) calloc (1, sizeof (*newkey))) == NULL)
-    {
-      result = ENOMEM;
-    }
-  else
-    {
-      memset(newkey,0,1*sizeof(*newkey));
-      pte_osResult osResult = pte_osTlsAlloc(&(newkey->key));
+  /* int result = 0; */
+  /* pthread_key_t newkey; */
 
-      if (osResult != PTE_OS_OK)
-        {
-          result = EAGAIN;
+  /* if ((newkey = (pthread_key_t) calloc (1, sizeof (*newkey))) == NULL) */
+  /*   { */
+  /*     result = ENOMEM; */
+  /*   } */
+  /* else */
+  /*   { */
+  /*     memset(newkey,0,1*sizeof(*newkey)); */
+  /*     pte_osResult osResult = pte_osTlsAlloc(&(newkey->key)); */
 
-          free (newkey);
-          newkey = NULL;
-        }
-      else if (destructor != NULL)
-        {
-          /*
-           * Have to manage associations between thread and key;
-           * Therefore, need a lock that allows multiple threads
-           * to gain exclusive access to the key->threads list.
-           *
-           * The mutex will only be created when it is first locked.
-           */
-          newkey->keyLock = PTHREAD_MUTEX_INITIALIZER;
-          newkey->destructor = destructor;
-        }
+  /*     if (osResult != PTE_OS_OK) */
+  /*       { */
+  /*         result = EAGAIN; */
 
-    }
+  /*         free (newkey); */
+  /*         newkey = NULL; */
+  /*       } */
+  /*     else if (destructor != NULL) */
+  /*       { */
+  /*         /\* */
+  /*          * Have to manage associations between thread and key; */
+  /*          * Therefore, need a lock that allows multiple threads */
+  /*          * to gain exclusive access to the key->threads list. */
+  /*          * */
+  /*          * The mutex will only be created when it is first locked. */
+  /*          *\/ */
+  /*         newkey->keyLock = PTHREAD_MUTEX_INITIALIZER; */
+  /*         newkey->destructor = destructor; */
+  /*       } */
 
-  *key = newkey;
+  /*   } */
 
-  NK_PROFILE_EXIT();
-  return (result);
+  /* *key = newkey; */
+
+  /* NK_PROFILE_EXIT(); */
+  /* return (result); */
 }

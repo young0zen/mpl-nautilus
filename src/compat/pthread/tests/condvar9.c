@@ -172,12 +172,13 @@ int pthread_test_condvar9()
   struct _timeb currSysTime;
   const unsigned int NANOSEC_PER_MILLISEC = 1000000;
 
-  cvthing.notbusy = PTHREAD_COND_INITIALIZER;
+  //cvthing.notbusy = PTHREAD_COND_INITIALIZER;
+  pthread_cond_init(&cvthing.notbusy, NULL);
   cvthing.lock = PTHREAD_MUTEX_INITIALIZER;
 
-  assert((t[0] = pthread_self()).p != NULL);
+  assert((t[0] = pthread_self()) != NULL);
 
-  assert(cvthing.notbusy == PTHREAD_COND_INITIALIZER);
+  //assert(cvthing.notbusy == PTHREAD_COND_INITIALIZER);
 
   assert(cvthing.lock == PTHREAD_MUTEX_INITIALIZER);
 
@@ -188,7 +189,7 @@ int pthread_test_condvar9()
 
   abstime.tv_sec += 5;
 
-  assert((t[0] = pthread_self()).p != NULL);
+  assert((t[0] = pthread_self()) != NULL);
 
   awoken = 0;
 
@@ -254,7 +255,7 @@ int pthread_test_condvar9()
 
   assert(pthread_cond_destroy(&cvthing.notbusy) == 0);
 
-  assert(cvthing.notbusy == NULL);
+  //assert(cvthing.notbusy == NULL);
 
   assert(!failed);
 

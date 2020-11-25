@@ -1,5 +1,6 @@
 NK_LIB =\
-	nk/
+	nk/\
+	simple_sem/
 
 MUTEX_OBJS = \
   pthread_mutex_unlock.o \
@@ -22,13 +23,13 @@ MUTEXATTR_OBJS = \
 SUPPORT_OBJS = \
   pte_relmillisecs.o \
   pte_mutex_check_need_init.o \
-  pte_threadDestroy.o \
-  pte_new.o \
-  pte_threadStart.o \
   global.o \
-  pte_reuse.o \
   pthread_init.o \
-  pthread_terminate.o
+  pthread_terminate.o\
+  pte_threadStart.o \
+  #pte_threadDestroy.o \
+  pte_new.o \
+  pte_reuse.o \
 
 THREAD_OBJS = \
   create.o \
@@ -36,9 +37,6 @@ THREAD_OBJS = \
   pthread_equal.o \
   pthread_join.o \
   pthread_detach.o \
-  pte_detach.o \
-  pte_callUserDestroyRoutines.o \
-  pte_tkAssocDestroy.o \
   pthread_kill.o \
   pthread_attr_destroy.o \
   pthread_attr_getdetachstate.o \
@@ -64,19 +62,21 @@ THREAD_OBJS = \
   sched_get_priority_min.o \
   pthread_attr_getstack.o \
   pthread_getattr_np.o
+  #pte_detach.o \
+  pte_callUserDestroyRoutines.o \
+  pte_tkAssocDestroy.o \
 
 TLS_OBJS = \
   pthread_key_create.o \
   pthread_key_delete.o \
   pthread_getspecific.o \
   pthread_setspecific.o \
-  pte_tkAssocCreate.o
+  #pte_tkAssocCreate.o
 
 MISC_OBJS = \
   sched_yield.o \
   pthread_delay_np.o \
   pthread_testcancel.o \
-  pte_throw.o \
   cleanup.o \
   pthread_once.o \
   pthread_num_processors_np.o \
@@ -85,9 +85,10 @@ MISC_OBJS = \
   global.o \
 	pthread_getconcurrency.o \
 	pthread_setconcurrency.o \
-  pte_cancellable_wait.o
+  #pte_cancellable_wait.o
   #pthread_timechange_handler_np.o \
   #pte_cond_check_need_init.o \
+  pte_throw.o \
 
 SEM_OBJS = \
   sem_close.o \

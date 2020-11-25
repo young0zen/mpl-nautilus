@@ -102,7 +102,7 @@ pthread_spin_init (pthread_spinlock_t * lock, int pshared)
     }
   else
     {
-      pthread_mutexattr_t ma;
+      pthread_mutexattr_t* ma;
       result = pthread_mutexattr_init (&ma);
 
       if (0 == result)

@@ -45,7 +45,7 @@
 #define PTHREAD_H
 
 #include "nk/pte_types.h"
-
+#include "debug.h"
 #include "sched.h"
 
 #define PTE_VERSION 2,8,0,0
@@ -400,12 +400,15 @@ enum
 	//struct pthread_attr_t_* attr;
       } pte_handle_t;
 
-    typedef pte_handle_t pthread_t;
+    // typedef pte_handle_t pthread_t;
+    // nk_thread_id_t = nk_thread_t *;
+    typedef nk_thread_id_t pthread_t;
     typedef struct pthread_attr_t_ * pthread_attr_t;
     typedef struct pthread_once_t_ pthread_once_t;
-    typedef struct pthread_key_t_ * pthread_key_t;
+    //typedef struct pthread_key_t_ * pthread_key_t;
+    typedef nk_tls_key_t pthread_key_t;
     typedef struct pthread_mutex_t_ * pthread_mutex_t;
-    typedef struct pthread_mutexattr_t_ * pthread_mutexattr_t;
+    typedef struct pthread_mutexattr_t_  pthread_mutexattr_t;
     // typedef struct pthread_cond_t_ * pthread_cond_t;
     typedef struct pthread_condattr_t_ * pthread_condattr_t;
     typedef struct pthread_rwlock_t_ * pthread_rwlock_t;
@@ -494,7 +497,7 @@ enum
       {
         int          state;
         void *       semaphore;
-        int 		   numSemaphoreUsers;
+        int          numSemaphoreUsers;
         int          done;        /* indicates if user function has been executed */
 //  void *       lock;
 //  int          reserved1;
@@ -519,7 +522,7 @@ enum
 #define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP PTHREAD_RECURSIVE_MUTEX_INITIALIZER
 #define PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP PTHREAD_ERRORCHECK_MUTEX_INITIALIZER
 
-#define PTHREAD_COND_INITIALIZER ((pthread_cond_t) -1)
+#define PTHREAD_COND_INITIALIZER {0,0,0,0,0,0,0}
 
 #define PTHREAD_RWLOCK_INITIALIZER ((pthread_rwlock_t) -1)
 

@@ -49,9 +49,9 @@ pthread_mutexattr_gettype (pthread_mutexattr_t * attr, int *kind)
 {
   int result = 0;
 
-  if (attr != NULL && *attr != NULL && kind != NULL)
+  if (attr != NULL  && kind != NULL)
     {
-      *kind = (*attr)->kind;
+      *kind = attr->kind;
     }
   else
     {

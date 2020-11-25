@@ -170,14 +170,16 @@ int pthread_test_condvar6()
 
 
   start_flag = PTHREAD_MUTEX_INITIALIZER;
-  cvthing.notbusy = PTHREAD_COND_INITIALIZER;
+ // cvthing.notbusy = PTHREAD_COND_INITIALIZER;
   cvthing.lock = PTHREAD_MUTEX_INITIALIZER;
 
+  pthread_cond_init(&cvthing.notbusy, NULL);
+  
   cvthing.shared = 0;
 
-  assert((t[0] = pthread_self()).p != NULL);
+  assert((t[0] = pthread_self()) != NULL);
 
-  assert(cvthing.notbusy == PTHREAD_COND_INITIALIZER);
+  //assert(cvthing.notbusy == PTHREAD_COND_INITIALIZER);
 
   assert(cvthing.lock == PTHREAD_MUTEX_INITIALIZER);
 
@@ -185,7 +187,7 @@ int pthread_test_condvar6()
 
 
 
-  assert((t[0] = pthread_self()).p != NULL);
+  assert((t[0] = pthread_self()) != NULL);
 
   awoken = 0;
 
@@ -231,7 +233,7 @@ int pthread_test_condvar6()
 
   assert(pthread_cond_destroy(&cvthing.notbusy) == 0);
 
-  assert(cvthing.notbusy == NULL);
+ // assert(cvthing.notbusy == NULL);
 
   /*
    * Standard check that all threads started.

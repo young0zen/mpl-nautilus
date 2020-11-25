@@ -1,44 +1,5 @@
 /*
  * pthread_detach.c
- *
- * Description:
- * This translation unit implements functions related to thread
- * synchronisation.
- *
- * --------------------------------------------------------------------------
- *
- *      Pthreads-embedded (PTE) - POSIX Threads Library for embedded systems
- *      Copyright(C) 2008 Jason Schmidlapp
- *
- *      Contact Email: jschmidlapp@users.sourceforge.net
- *
- *
- *      Based upon Pthreads-win32 - POSIX Threads Library for Win32
- *      Copyright(C) 1998 John E. Bossom
- *      Copyright(C) 1999,2005 Pthreads-win32 contributors
- *
- *      Contact Email: rpj@callisto.canberra.edu.au
- *
- *      The original list of contributors to the Pthreads-win32 project
- *      is contained in the file CONTRIBUTORS.ptw32 included with the
- *      source code distribution. The list can also be seen at the
- *      following World Wide Web location:
- *      http://sources.redhat.com/pthreads-win32/contributors.html
- *
- *      This library is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU Lesser General Public
- *      License as published by the Free Software Foundation; either
- *      version 2 of the License, or (at your option) any later version.
- *
- *      This library is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *      Lesser General Public License for more details.
- *
- *      You should have received a copy of the GNU Lesser General Public
- *      License along with this library in the file COPYING.LIB;
- *      if not, write to the Free Software Foundation, Inc.,
- *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
 #include "nk/pte_osal.h"
@@ -73,72 +34,99 @@ pthread_detach (pthread_t thread)
  * ------------------------------------------------------
  */
 {
-  NK_PROFILE_ENTRY();
-  int result;
-  unsigned char destroyIt = PTE_FALSE;
-  pte_thread_t * tp = (pte_thread_t *) thread.p;
+    nk_thread_t * t = (nk_thread_t*) thread;
+    preempt_disable();
+
+    ASSERT(t->refcount > 0);
+
+    /* remove me from my parent's child list */
+    list_del(&(t->child_node));
+
+    --t->refcount;
+
+    // conditional reaping is done by the scheduler when threads are created
+    // this makes the join+exit path much faster in the common case and 
+    // bulks reaping events together
+    // the user can also explictly reap when needed
+    // plus the autoreaper thread can be enabled 
+    // the following code can be enabled if you want to reap immediately once
+    // a thread's refcount drops to zero
+    // 
+    //if (t->refcount==0) { 
+    //   nk_thread_destroy(t);
+    //}
+
+    preempt_enable();
+
+    return 0;
 
 
-  pte_osMutexLock (pte_thread_reuse_lock);
+  /* NK_PROFILE_ENTRY(); */
+  /* int result; */
+  /* unsigned char destroyIt = PTE_FALSE; */
+  /* pte_thread_t * tp = (pte_thread_t *) thread.p; */
 
-  if (NULL == tp
-      || thread.x != tp->ptHandle.x)
-    {
-      result = ESRCH;
-    }
-  else if (PTHREAD_CREATE_DETACHED == tp->detachState)
-    {
-      result = EINVAL;
-    }
-  else
-    {
-      /*
-       * Joinable pte_thread_t structs are not scavenged until
-       * a join or detach is done. The thread may have exited already,
-       * but all of the state and locks etc are still there.
-       */
-      result = 0;
 
-      if (pthread_mutex_lock (&tp->cancelLock) == 0)
-        {
-          if (tp->state != PThreadStateLast)
-            {
-              tp->detachState = PTHREAD_CREATE_DETACHED;
-            }
-          else if (tp->detachState != PTHREAD_CREATE_DETACHED)
-            {
-              /*
-               * Thread is joinable and has exited or is exiting.
-               */
-              destroyIt = PTE_TRUE;
-            }
-          (void) pthread_mutex_unlock (&tp->cancelLock);
-        }
-      else
-        {
-          /* cancelLock shouldn't fail, but if it does ... */
-          result = ESRCH;
-        }
-    }
+  /* pte_osMutexLock (pte_thread_reuse_lock); */
 
-  pte_osMutexUnlock(pte_thread_reuse_lock);
+  /* if (NULL == tp */
+  /*     || thread.x != tp->ptHandle.x) */
+  /*   { */
+  /*     result = ESRCH; */
+  /*   } */
+  /* else if (PTHREAD_CREATE_DETACHED == tp->detachState) */
+  /*   { */
+  /*     result = EINVAL; */
+  /*   } */
+  /* else */
+  /*   { */
+  /*     /\* */
+  /*      * Joinable pte_thread_t structs are not scavenged until */
+  /*      * a join or detach is done. The thread may have exited already, */
+  /*      * but all of the state and locks etc are still there. */
+  /*      *\/ */
+  /*     result = 0; */
 
-  if (result == 0)
-    {
-      /* Thread is joinable */
+  /*     if (pthread_mutex_lock (&tp->cancelLock) == 0) */
+  /*       { */
+  /*         if (tp->state != PThreadStateLast) */
+  /*           { */
+  /*             tp->detachState = PTHREAD_CREATE_DETACHED; */
+  /*           } */
+  /*         else if (tp->detachState != PTHREAD_CREATE_DETACHED) */
+  /*           { */
+  /*             /\* */
+  /*              * Thread is joinable and has exited or is exiting. */
+  /*              *\/ */
+  /*             destroyIt = PTE_TRUE; */
+  /*           } */
+  /*         (void) pthread_mutex_unlock (&tp->cancelLock); */
+  /*       } */
+  /*     else */
+  /*       { */
+  /*         /\* cancelLock shouldn't fail, but if it does ... *\/ */
+  /*         result = ESRCH; */
+  /*       } */
+  /*   } */
 
-      if (destroyIt)
-        {
-          /* The thread has exited or is exiting but has not been joined or
-           * detached. Need to wait in case it's still exiting.
-           */
-	  pte_osThreadWaitForEnd(tp->threadId);
+  /* pte_osMutexUnlock(pte_thread_reuse_lock); */
 
-          pte_threadDestroy (thread);
-        }
-    }
+  /* if (result == 0) */
+  /*   { */
+  /*     /\* Thread is joinable *\/ */
 
-  NK_PROFILE_EXIT();
-  return (result);
+  /*     if (destroyIt) */
+  /*       { */
+  /*         /\* The thread has exited or is exiting but has not been joined or */
+  /*          * detached. Need to wait in case it's still exiting. */
+  /*          *\/ */
+  /* 	  pte_osThreadWaitForEnd(tp->threadId); */
+
+  /*         pte_threadDestroy (thread); */
+  /*       } */
+  /*   } */
+
+  /* NK_PROFILE_EXIT(); */
+  /* return (result); */
 
 }				/* pthread_detach */

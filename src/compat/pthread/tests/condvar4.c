@@ -131,7 +131,7 @@ int pthread_test_condvar4()
   cvthing.lock = PTHREAD_MUTEX_INITIALIZER;
 
 
-  assert((t[0] = pthread_self()).p != NULL);
+  assert((t[0] = pthread_self()) != NULL);
 
   assert(cvthing.notbusy == PTHREAD_COND_INITIALIZER);
 
@@ -175,7 +175,7 @@ int pthread_test_condvar4()
 
   assert(pthread_cond_destroy(&cvthing.notbusy) == 0);
 
-  assert(cvthing.notbusy == NULL);
+  assert(&(cvthing.notbusy) == NULL);
 
   return 0;
 }

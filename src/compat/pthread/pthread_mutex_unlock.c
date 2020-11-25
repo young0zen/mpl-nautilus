@@ -54,6 +54,7 @@
 int
 pthread_mutex_unlock (pthread_mutex_t * mutex)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_mutex_t mx;
 
@@ -62,7 +63,7 @@ pthread_mutex_unlock (pthread_mutex_t * mutex)
    */
   //orig
   mx = *mutex;
-  //mjc
+
   //pthread_mutex_t *mx;
   //mx = mutex;
 
@@ -103,7 +104,7 @@ pthread_mutex_unlock (pthread_mutex_t * mutex)
               if (mx->kind != PTHREAD_MUTEX_RECURSIVE
                   || 0 == --mx->recursive_count)
                 {
-                  mx->ownerThread.p = NULL;
+                  mx->ownerThread = NULL;
 
                   if (PTE_ATOMIC_EXCHANGE (&mx->lock_idx,0) < 0)
                     {
@@ -121,6 +122,8 @@ pthread_mutex_unlock (pthread_mutex_t * mutex)
     {
       result = EINVAL;
     }
+
+  NK_PROFILE_EXIT();
 
   return (result);
 }

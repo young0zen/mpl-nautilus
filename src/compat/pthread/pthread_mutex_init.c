@@ -50,6 +50,7 @@
 int
 pthread_mutex_init (pthread_mutex_t * mutex, const pthread_mutexattr_t * attr)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_mutex_t mx;
 
@@ -60,7 +61,7 @@ pthread_mutex_init (pthread_mutex_t * mutex, const pthread_mutexattr_t * attr)
     }
 
   mx = (pthread_mutex_t) calloc (1, sizeof (*mx));
-  memset(mx, 0, 1*sizeof(*mx));
+  memset(mx, 0, sizeof(*mx));
   if (mx == NULL)
     {
       result = ENOMEM;
@@ -69,21 +70,22 @@ pthread_mutex_init (pthread_mutex_t * mutex, const pthread_mutexattr_t * attr)
     {
       mx->lock_idx = 0;
       mx->recursive_count = 0;
-      //DEBUG("attr addr %08x\n", attr);
-      //DEBUG("attr kind %08x\n", *attr);
+      // ERROR("attr addr %08x\n", attr);
+      // ERROR("attr *addr %08x\n", *attr);
 
       //this is mx->kind assignment is new
-      mx->kind = PTHREAD_MUTEX_DEFAULT;
+      //mx->kind = PTHREAD_MUTEX_DEFAULT;
       // below is original assignment, it fails
-      // mx->kind = (attr == NULL || *attr == NULL ? PTHREAD_MUTEX_DEFAULT : (*attr)->kind);
+      mx->kind = ((attr == NULL ) ? PTHREAD_MUTEX_DEFAULT : attr->kind);
+
       //DEBUG("pass mxkind\n");
-      mx->ownerThread.p = NULL;
+      mx->ownerThread = NULL;
       mx->sem = nk_semaphore_create(NULL, 0,0, NULL);
       //pte_osSemaphoreCreate(0,&mx->handle);
 
     }
 
   *mutex = mx;
-
+   NK_PROFILE_EXIT();
   return (result);
 }

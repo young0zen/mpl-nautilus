@@ -74,10 +74,10 @@ pthread_mutexattr_init (pthread_mutexattr_t * attr)
  */
 {
   int result = 0;
-  pthread_mutexattr_t ma;
+  //pthread_mutexattr_t ma;
 
-  ma = (pthread_mutexattr_t) calloc (1, sizeof (*ma));
-  memset(ma,0,1*sizeof(*ma));
+  pthread_mutexattr_t* ma = attr; // (pthread_mutexattr_t) calloc (1, sizeof (*ma));
+  // memset(ma,0,1*sizeof(*ma));
   if (ma == NULL)
     {
       result = ENOMEM;
@@ -88,7 +88,7 @@ pthread_mutexattr_init (pthread_mutexattr_t * attr)
       ma->kind = PTHREAD_MUTEX_DEFAULT;
     }
 
-  *attr = ma;
+  //*attr = ma;
 
   return (result);
 }				/* pthread_mutexattr_init */

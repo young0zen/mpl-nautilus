@@ -52,6 +52,8 @@ static pthread_mutex_t mutex;
 
 static void * locker(void * arg)
 {
+  extern int printf (const char * s, ...);
+
   struct timespec abstime =
     {
       0, 0
@@ -65,7 +67,7 @@ static void * locker(void * arg)
 
   abstime.tv_sec = currSysTime.time;
   abstime.tv_nsec = NANOSEC_PER_MILLISEC * currSysTime.millitm;
-
+  printf("wait time seconds %d \n", abstime.tv_sec+abstime.tv_nsec/1000000000ULL);
   assert(pthread_mutex_timedlock(&mutex, &abstime) == ETIMEDOUT);
 
   lockCount++;

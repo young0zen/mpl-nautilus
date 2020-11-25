@@ -58,10 +58,13 @@ static pthread_mutex_t mutex1;
 
 void * unlocker(void * arg)
 {
+  extern int printf (const char * s, ...);
   int expectedResult = (int) arg;
-
+  
   wasHere++;
-  assert(pthread_mutex_unlock(&mutex1) == expectedResult);
+  
+  int res =pthread_mutex_unlock(&mutex1);
+  assert(res == expectedResult);
   wasHere++;
   return NULL;
 }

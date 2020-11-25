@@ -50,6 +50,7 @@
 int
 pthread_mutex_lock (pthread_mutex_t * mutex)
 {
+  NK_PROFILE_ENTRY();
   int result = 0;
   pthread_mutex_t mx;
 
@@ -131,6 +132,6 @@ pthread_mutex_lock (pthread_mutex_t * mutex)
 
     }
   DEBUG("mx :%d, mutex:%d \n", mx->lock_idx, (*mutex)->lock_idx);
-
+  NK_PROFILE_EXIT();
   return (result);
 }

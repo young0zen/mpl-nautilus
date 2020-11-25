@@ -52,7 +52,7 @@
 #define _IMPLEMENT_H
 
 #include "nk/pte_osal.h"
-
+#include "simple_sem/ssem.h"
 /* use local include files during development */
 #include "semaphore.h"
 #include "sched.h"
@@ -85,17 +85,18 @@ typedef struct pte_thread_t_ pte_thread_t;
 
 struct pte_thread_t_
   {
-    pte_osThreadHandle threadId;      /* OS specific thread handle */
+nk_thread_id_t tid;
+    // pte_osThreadHandle threadId;      /* OS specific thread handle */
     pthread_t ptHandle;		/* This thread's permanent pthread_t handle */
-    pte_thread_t * prevReuse;	/* Links threads on reuse stack */
+    //pte_thread_t * prevReuse;	/* Links threads on reuse stack */
     volatile PThreadState state;
     void *exitStatus;
-    void *parms;
-    int ptErrno;
-    int detachState;
-    pthread_mutex_t threadLock;	/* Used for serialised access to public thread state */
+    //void *parms;
+    //int ptErrno;
+    //int detachState;
+    //pthread_mutex_t threadLock;	/* Used for serialised access to public thread state */
     int sched_priority;		/* As set, not as currently is */
-    pthread_mutex_t cancelLock;	/* Used for async-cancel safety */
+    //pthread_mutex_t cancelLock;	/* Used for async-cancel safety */
     int cancelState;
     int cancelType;
     int cancelEvent;
@@ -104,8 +105,8 @@ struct pte_thread_t_
 #endif	/* PTE_CLEANUP_C */
 int implicit:
     1;
-    void *keys;
-    void *nextAssoc;
+    //void *keys;
+    //void *nextAssoc;
   };
 
 
@@ -243,6 +244,13 @@ struct pthread_key_t_
 typedef struct ThreadParms ThreadParms;
 typedef struct ThreadKeyAssoc ThreadKeyAssoc;
 
+typedef struct thread_parms{
+  pthread_t tid;
+  void* (*start) (void *);
+  void *arg;
+
+} thread_parms;
+
 struct ThreadParms
   {
     pthread_t tid;
@@ -253,7 +261,8 @@ struct ThreadParms
 struct nk_pthread_cond_t_
 {
     NK_LOCK_T lock;
-    nk_wait_queue_t * wait_queue;
+    simple_sem_t* sem; 
+    //nk_wait_queue_t * wait_queue;
     unsigned nwaiters;
     unsigned long long wakeup_seq;
     unsigned long long woken_seq;
@@ -510,6 +519,8 @@ extern "C"
     
     //mjc add out
     int pte_threadStart (void *vthreadParms, void ** out);
+    //mjc add 
+    int pte_thread_start(void *parms, void** out);
 
     void pte_callUserDestroyRoutines (pthread_t thread);
 

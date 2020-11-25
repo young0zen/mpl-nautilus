@@ -6,7 +6,7 @@
 
 #define calloc(a,b) malloc(a*b)
 
-#define OS_MAX_SIMUL_THREADS 1000
+#define OS_MAX_SIMUL_THREADS 256
 
 #define OS_DEFAULT_PRIO 11
 

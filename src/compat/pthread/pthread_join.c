@@ -1,46 +1,6 @@
 /*
  * pthread_join.c
- *
- * Description:
- * This translation unit implements functions related to thread
- * synchronisation.
- *
- * --------------------------------------------------------------------------
- *
- *      Pthreads-embedded (PTE) - POSIX Threads Library for embedded systems
- *      Copyright(C) 2008 Jason Schmidlapp
- *
- *      Contact Email: jschmidlapp@users.sourceforge.net
- *
- *
- *      Based upon Pthreads-win32 - POSIX Threads Library for Win32
- *      Copyright(C) 1998 John E. Bossom
- *      Copyright(C) 1999,2005 Pthreads-win32 contributors
- *
- *      Contact Email: rpj@callisto.canberra.edu.au
- *
- *      The original list of contributors to the Pthreads-win32 project
- *      is contained in the file CONTRIBUTORS.ptw32 included with the
- *      source code distribution. The list can also be seen at the
- *      following World Wide Web location:
- *      http://sources.redhat.com/pthreads-win32/contributors.html
- *
- *      This library is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU Lesser General Public
- *      License as published by the Free Software Foundation; either
- *      version 2 of the License, or (at your option) any later version.
- *
- *      This library is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *      Lesser General Public License for more details.
- *
- *      You should have received a copy of the GNU Lesser General Public
- *      License along with this library in the file COPYING.LIB;
- *      if not, write to the Free Software Foundation, Inc.,
- *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
- */
-
+*/
 #include "nk/pte_osal.h"
 #include <nautilus/nautilus.h>
 #include "pthread.h"
@@ -83,86 +43,98 @@ pthread_join (pthread_t thread, void **value_ptr)
  * ------------------------------------------------------
  */
 {
-  NK_PROFILE_ENTRY();
-  int result;
-  pthread_t self;
-  pte_thread_t * tp = (pte_thread_t *) thread.p;
+
+  return nk_join(thread, value_ptr);
+
+  nk_thread_t * thethread = (nk_thread_t *) thread;
+  
+  if(thethread->parent == get_cur_thread()){
+     return nk_join(thread, value_ptr);
+  }else{
+     return 0;
+  }
+
+  //return nk_join(thread, value_ptr);
+  /* NK_PROFILE_ENTRY(); */
+  /* int result; */
+  /* pthread_t self; */
+  /* pte_thread_t * tp = (pte_thread_t *) thread.p; */
 
 
-  pte_osMutexLock (pte_thread_reuse_lock);
+  /* pte_osMutexLock (pte_thread_reuse_lock); */
 
-  if (NULL == tp
-      || thread.x != tp->ptHandle.x)
-    {
-      result = ESRCH;
-    }
-  else if (PTHREAD_CREATE_DETACHED == tp->detachState)
-    {
-      result = EINVAL;
-    }
-  else
-    {
-      result = 0;
-    }
+  /* if (NULL == tp */
+  /*     || thread.x != tp->ptHandle.x) */
+  /*   { */
+  /*     result = ESRCH; */
+  /*   } */
+  /* else if (PTHREAD_CREATE_DETACHED == tp->detachState) */
+  /*   { */
+  /*     result = EINVAL; */
+  /*   } */
+  /* else */
+  /*   { */
+  /*     result = 0; */
+  /*   } */
 
-  pte_osMutexUnlock(pte_thread_reuse_lock);
+  /* pte_osMutexUnlock(pte_thread_reuse_lock); */
 
-  if (result == 0)
-    {
-      /*
-       * The target thread is joinable and can't be reused before we join it.
-       */
-      self = pthread_self();
+  /* if (result == 0) */
+  /*   { */
+  /*     /\* */
+  /*      * The target thread is joinable and can't be reused before we join it. */
+  /*      *\/ */
+  /*     self = pthread_self(); */
 
-      if (NULL == self.p)
-        {
-          result = ENOENT;
-        }
-      else if (pthread_equal (self, thread))
-        {
-          result = EDEADLK;
-        }
-      else
-        {
-          /*
-           * Pthread_join is a cancelation point.
-           * If we are canceled then our target thread must not be
-           * detached (destroyed). This is guarranteed because
-           * pthreadCancelableWait will not return if we
-           * are canceled.
-           */
+  /*     if (NULL == self.p) */
+  /*       { */
+  /*         result = ENOENT; */
+  /*       } */
+  /*     else if (pthread_equal (self, thread)) */
+  /*       { */
+  /*         result = EDEADLK; */
+  /*       } */
+  /*     else */
+  /*       { */
+  /*         /\* */
+  /*          * Pthread_join is a cancelation point. */
+  /*          * If we are canceled then our target thread must not be */
+  /*          * detached (destroyed). This is guarranteed because */
+  /*          * pthreadCancelableWait will not return if we */
+  /*          * are canceled. */
+  /*          *\/ */
 
-          result = pte_osThreadWaitForEnd(tp->threadId);
+  /*         result = pte_osThreadWaitForEnd(tp->threadId); */
 
-          if (PTE_OS_OK == result)
-            {
-              if (value_ptr != NULL)
-                {
-                  *value_ptr = tp->exitStatus;
-                }
+  /*         if (PTE_OS_OK == result) */
+  /*           { */
+  /*             if (value_ptr != NULL) */
+  /*               { */
+  /*                 *value_ptr = tp->exitStatus; */
+  /*               } */
 
-              /*
-               * The result of making multiple simultaneous calls to
-               * pthread_join() or pthread_detach() specifying the same
-               * target is undefined.
-               */
+  /*             /\* */
+  /*              * The result of making multiple simultaneous calls to */
+  /*              * pthread_join() or pthread_detach() specifying the same */
+  /*              * target is undefined. */
+  /*              *\/ */
 
-	      //mjc detached already
-              //result = pthread_detach (thread);
-            }
-	  else if (result == PTE_OS_INTERRUPTED)
-	    {
-	      /* Call was cancelled, but still return success (per spec) */
-	      result = 0;
-	    }
-          else
-            {
-              result = ESRCH;
-            }
-        }
-    }
+  /* 	      //mjc detached already */
+  /*             //result = pthread_detach (thread); */
+  /*           } */
+  /* 	  else if (result == PTE_OS_INTERRUPTED) */
+  /* 	    { */
+  /* 	      /\* Call was cancelled, but still return success (per spec) *\/ */
+  /* 	      result = 0; */
+  /* 	    } */
+  /*         else */
+  /*           { */
+  /*             result = ESRCH; */
+  /*           } */
+  /*       } */
+  /*   } */
 
-  NK_PROFILE_EXIT();
-  return (result);
+  /* NK_PROFILE_EXIT(); */
+  /* return (result); */
 
 }				/* pthread_join */
