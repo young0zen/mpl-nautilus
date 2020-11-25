@@ -53,7 +53,7 @@ pthread_cond_timedwait (pthread_cond_t * c,
 
     do {
       if((now-start) > timeout_ns){
-	result = 1; //timeout
+	result = ETIMEDOUT; //timeout
 	//waited long enough
 	goto bcout;
 	

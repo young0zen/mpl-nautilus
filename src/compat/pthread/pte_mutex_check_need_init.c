@@ -53,8 +53,17 @@ static struct pthread_mutexattr_t_ pte_errorcheck_mutexattr_s =
   {
     PTHREAD_PROCESS_PRIVATE, PTHREAD_MUTEX_ERRORCHECK
   };
-static pthread_mutexattr_t pte_recursive_mutexattr = &pte_recursive_mutexattr_s;
-static pthread_mutexattr_t pte_errorcheck_mutexattr = &pte_errorcheck_mutexattr_s;
+static pthread_mutexattr_t pte_recursive_mutexattr = 
+ {
+    PTHREAD_PROCESS_PRIVATE, PTHREAD_MUTEX_RECURSIVE
+  };
+//pte_recursive_mutexattr_s;
+static pthread_mutexattr_t pte_errorcheck_mutexattr = 
+ {
+    PTHREAD_PROCESS_PRIVATE, PTHREAD_MUTEX_ERRORCHECK
+  };
+
+//pte_errorcheck_mutexattr_s;
 
 
 int

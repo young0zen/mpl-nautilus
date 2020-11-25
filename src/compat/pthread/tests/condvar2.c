@@ -112,8 +112,8 @@ int pthread_test_condvar2()
 
   abstime.tv_sec += 1;
 
-
-  assert(pthread_cond_timedwait(&cv, &mutex, &abstime) == ETIMEDOUT);
+  int res = pthread_cond_timedwait(&cv, &mutex, &abstime); 
+  assert(res == ETIMEDOUT);
 
   assert(pthread_mutex_unlock(&mutex) == 0);
 

@@ -408,7 +408,7 @@ enum
     //typedef struct pthread_key_t_ * pthread_key_t;
     typedef nk_tls_key_t pthread_key_t;
     typedef struct pthread_mutex_t_ * pthread_mutex_t;
-    typedef struct pthread_mutexattr_t_ * pthread_mutexattr_t;
+    typedef struct pthread_mutexattr_t_  pthread_mutexattr_t;
     // typedef struct pthread_cond_t_ * pthread_cond_t;
     typedef struct pthread_condattr_t_ * pthread_condattr_t;
     typedef struct pthread_rwlock_t_ * pthread_rwlock_t;
@@ -522,7 +522,7 @@ enum
 #define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP PTHREAD_RECURSIVE_MUTEX_INITIALIZER
 #define PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP PTHREAD_ERRORCHECK_MUTEX_INITIALIZER
 
-#define PTHREAD_COND_INITIALIZER ((pthread_cond_t) -1)
+#define PTHREAD_COND_INITIALIZER {0,0,0,0,0,0,0}
 
 #define PTHREAD_RWLOCK_INITIALIZER ((pthread_rwlock_t) -1)
 

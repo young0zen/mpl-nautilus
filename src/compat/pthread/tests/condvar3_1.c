@@ -101,7 +101,7 @@ static int waiting = 0;
 
 enum
 {
-  NUMTHREADS = 30
+  NUMTHREADS = 4 //30
 };
 
 static void *

@@ -78,8 +78,8 @@ static void runThreadTests(void)
   printf("Join test #3\n");
   pthread_test_join3();
 
-  printf("Join test #4\n");
-  pthread_test_join4();
+// printf("Join test #4\n");
+//pthread_test_join4();
 
   printf("Kill test #1\n");
   pthread_test_kill1();
@@ -93,12 +93,12 @@ static void runThreadTests(void)
   printf("Exit test #3\n");
   pthread_test_exit3();
 
-  printf("Exit test #4\n");
+/*  printf("Exit test #4\n");
   pthread_test_exit4();
 
   printf("Exit test #5\n");
   pthread_test_exit5();
-
+*/
   /* These tests can not be run in series with other tests,
    * as they rely on knowing what is on the reuse queue.
    */
@@ -110,12 +110,12 @@ static void runThreadTests(void)
     pthread_test_reuse2();
   */
 
-  printf("Priority test #1\n");
+/*  printf("Priority test #1\n");
   pthread_test_priority1();
 
   printf("Priority test #2\n");
   pthread_test_priority2();
-
+*/
 //  printf("Inherit test #1\n");
 //  pthread_test_inherit1();  ///@todo
 
@@ -284,11 +284,11 @@ static void runCondvarTests()
   printf("Condvar test #1\n");
   pthread_test_condvar1();
 
-  printf("Condvar test #1-1\n");
-  pthread_test_condvar1_1();
+  //printf("Condvar test #1-1\n");
+  //pthread_test_condvar1_1();
 
-  printf("Condvar test #1-2\n");
-  pthread_test_condvar1_2();
+  //printf("Condvar test #1-2\n");
+ // pthread_test_condvar1_2();
 
   printf("Condvar test #2\n");
   pthread_test_condvar2();
@@ -308,23 +308,23 @@ static void runCondvarTests()
   printf("Condvar test #3-3\n");
   pthread_test_condvar3_3();
 
-  printf("Condvar test #4\n");
-  pthread_test_condvar4();
+  //printf("Condvar test #4\n");
+  //pthread_test_condvar4();
 
-  printf("Condvar test #5\n");
-  pthread_test_condvar5();
+  //printf("Condvar test #5\n");
+  //pthread_test_condvar5();
 
   printf("Condvar test #6\n");
   pthread_test_condvar6();
 
-  printf("Condvar test #7\n");
-  pthread_test_condvar7();
+  //printf("Condvar test #7\n");
+  //pthread_test_condvar7();
 
   printf("Condvar test #8\n");
   pthread_test_condvar8();
 
-  printf("Condvar test #9\n");
-  pthread_test_condvar9();
+  //printf("Condvar test #9\n");
+  //pthread_test_condvar9();
 
 }
 
@@ -477,13 +477,14 @@ static int pte_test_main()
       printf("   Test iteration #%d\n\n",i);
       printf("=========================\n");
 
-      runThreadTests(); 
-      //runMiscTests();
+     // runThreadTests(); 
       //runMutexTests();
-      //runSemTests();
       //runCondvarTests();
-      //runBarrierTests();
+      runBarrierTests();
+      
       //runSpinTests();
+      //runSemTests();
+      //runMiscTests();
       //runRwlockTests();
       //runCancelTests();
       //runExceptionTests();

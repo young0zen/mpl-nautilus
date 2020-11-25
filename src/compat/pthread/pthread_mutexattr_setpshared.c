@@ -89,7 +89,7 @@ pthread_mutexattr_setpshared (pthread_mutexattr_t * attr, int pshared)
 {
   int result;
 
-  if ((attr != NULL && *attr != NULL) &&
+  if ((attr != NULL ) &&
       ((pshared == PTHREAD_PROCESS_SHARED) ||
        (pshared == PTHREAD_PROCESS_PRIVATE)))
     {
@@ -113,7 +113,7 @@ pthread_mutexattr_setpshared (pthread_mutexattr_t * attr, int pshared)
           result = 0;
         }
 
-      (*attr)->pshared = pshared;
+       attr->pshared = pshared;
     }
   else
     {

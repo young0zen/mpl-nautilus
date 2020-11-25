@@ -43,7 +43,18 @@ pthread_join (pthread_t thread, void **value_ptr)
  * ------------------------------------------------------
  */
 {
+
   return nk_join(thread, value_ptr);
+
+  nk_thread_t * thethread = (nk_thread_t *) thread;
+  
+  if(thethread->parent == get_cur_thread()){
+     return nk_join(thread, value_ptr);
+  }else{
+     return 0;
+  }
+
+  //return nk_join(thread, value_ptr);
   /* NK_PROFILE_ENTRY(); */
   /* int result; */
   /* pthread_t self; */

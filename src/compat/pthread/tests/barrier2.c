@@ -46,7 +46,7 @@
 
 #include "test.h"
 
-static pthread_barrier_t barrier = NULL;
+static pthread_barrier_t barrier;
 
 int pthread_test_barrier2()
 {

@@ -108,7 +108,7 @@ int pthread_test_condvar1_1()
     {
       i = rand() % NUM_CV;
 
-      if (cv[i] != NULL)
+      if (&(cv[i]) != NULL)
         {
           j--;
           assert(pthread_cond_destroy(&cv[i]) == 0);

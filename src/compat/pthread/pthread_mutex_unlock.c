@@ -63,7 +63,7 @@ pthread_mutex_unlock (pthread_mutex_t * mutex)
    */
   //orig
   mx = *mutex;
-  //mjc
+
   //pthread_mutex_t *mx;
   //mx = mutex;
 

@@ -25,10 +25,10 @@ SUPPORT_OBJS = \
   pte_mutex_check_need_init.o \
   global.o \
   pthread_init.o \
-  pthread_terminate.o
+  pthread_terminate.o\
+  pte_threadStart.o \
   #pte_threadDestroy.o \
   pte_new.o \
-  pte_threadStart.o \
   pte_reuse.o \
 
 THREAD_OBJS = \
@@ -157,6 +157,6 @@ OBJS = $(MUTEX_OBJS) $(MUTEXATTR_OBJS) $(THREAD_OBJS) $(SUPPORT_OBJS) $(TLS_OBJS
 obj-y +=$(OBJS) \
 	$(NK_LIB) \
 
-#obj-$(NAUT_CONFIG_BASE_PTHREAD_COMPAT_TESTS) += tests/
+obj-$(NAUT_CONFIG_BASE_PTHREAD_COMPAT_TESTS) += tests/
 
 

@@ -45,19 +45,19 @@
 
 #include "test.h"
 
-static pthread_barrier_t barrier = NULL;
+static pthread_barrier_t barrier;
 
 int pthread_test_barrier1()
 {
-  assert(barrier == NULL);
+  //assert(barrier == NULL);
 
   assert(pthread_barrier_init(&barrier, NULL, 1) == 0);
 
-  assert(barrier != NULL);
+  //assert(barrier != NULL);
 
   assert(pthread_barrier_destroy(&barrier) == 0);
 
-  assert(barrier == NULL);
+  //assert(barrier == NULL);
 
   return 0;
 }

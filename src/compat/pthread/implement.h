@@ -244,6 +244,13 @@ struct pthread_key_t_
 typedef struct ThreadParms ThreadParms;
 typedef struct ThreadKeyAssoc ThreadKeyAssoc;
 
+typedef struct thread_parms{
+  pthread_t tid;
+  void* (*start) (void *);
+  void *arg;
+
+} thread_parms;
+
 struct ThreadParms
   {
     pthread_t tid;
@@ -512,6 +519,8 @@ extern "C"
     
     //mjc add out
     int pte_threadStart (void *vthreadParms, void ** out);
+    //mjc add 
+    int pte_thread_start(void *parms, void** out);
 
     void pte_callUserDestroyRoutines (pthread_t thread);
 

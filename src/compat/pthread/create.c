@@ -29,7 +29,7 @@ pthread_create (pthread_t * ptid,
   
   int result = EAGAIN, detach_state=0, priority=0;
   long stack_size;
-   ThreadParms *parms = NULL; 
+  thread_parms *parms = NULL; 
 
   pte_osResult osResult;
   
@@ -72,8 +72,8 @@ if ((parms = (ThreadParms *) malloc (sizeof (*parms))) == NULL)
 
   struct sys_info *sys = per_cpu_get(system);
   COUNT = (++COUNT) % sys->num_cpus;
-  int ret = nk_thread_start(start, arg, NULL, detach_state, (nk_stack_size_t)stack_size, ptid, COUNT);
-   
+  
+  int ret = nk_thread_start((void*)(&pte_thread_start), parms, NULL, 0, (nk_stack_size_t)stack_size, ptid, 0);
   if (ret != 0){
     ERROR("create error exit\n");
     osResult = PTE_OS_NO_RESOURCES;
@@ -96,6 +96,7 @@ if ((parms = (ThreadParms *) malloc (sizeof (*parms))) == NULL)
    */
   NK_PROFILE_EXIT();
 
+  return osResult;
 FAIL0:
 
   return (result);

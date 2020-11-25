@@ -93,7 +93,7 @@ static struct timespec abstime =
 
 enum
 {
-  NUMTHREADS = OS_MAX_SIMUL_THREADS
+  NUMTHREADS = 8 //OS_MAX_SIMUL_THREADS
 };
 
 static void *
@@ -118,6 +118,7 @@ int pthread_test_condvar2_1()
   struct _timeb currSysTime;
   const unsigned int NANOSEC_PER_MILLISEC = 1000000;
 
+  printf("num of threads %d\n", NUMTHREADS);
   assert(pthread_cond_init(&cv, NULL) == 0);
 
   assert(pthread_mutex_init(&mutex, NULL) == 0);

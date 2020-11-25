@@ -114,7 +114,10 @@ pthread_mutex_timedlock (pthread_mutex_t * mutex,
   NK_PROFILE_ENTRY();
   int result;
   pthread_mutex_t mx;
-  uint64_t timeout_ns = abstime->tv_sec*1000000000ULL+abstime->tv_nsec;
+  uint64_t timeout_ns=0; 
+  if(abstime != NULL){
+    timeout_ns = abstime->tv_sec*1000000000ULL+abstime->tv_nsec;
+  }
   /*
    * Let the system deal with invalid pointers.
    */
@@ -141,10 +144,12 @@ pthread_mutex_timedlock (pthread_mutex_t * mutex,
         {
           while (PTE_ATOMIC_EXCHANGE(&mx->lock_idx,-1) != 0)
             {
-              
-              if (0 != (result = nk_semaphore_down_timeout(mx->sem, timeout_ns)))
+              if(abstime == NULL){
+	         nk_semaphore_down(mx->sem);
+	      }
+	      else if (0 != (result = nk_semaphore_down_timeout(mx->sem, timeout_ns)))
                 {
-                  return result;
+                  return ETIMEDOUT;
                 }
             }
         }
@@ -175,9 +180,12 @@ pthread_mutex_timedlock (pthread_mutex_t * mutex,
             {
               while (PTE_ATOMIC_EXCHANGE(&mx->lock_idx,-1) != 0)
                 {
-                  if (0 != (result = nk_semaphore_down_timeout(mx->sem, timeout_ns)))
+		  if(abstime == NULL){
+                    nk_semaphore_down(mx->sem);
+                  }
+                  else if (0 != (result = nk_semaphore_down_timeout(mx->sem, timeout_ns)))
                     {
-                      return result;
+                      return ETIMEDOUT;
                     }
                 }
 

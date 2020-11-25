@@ -8,6 +8,35 @@
 #include "implement.h"
 /* #include <stdio.h> */
 #include <nautilus/nautilus.h>
+
+static int thread_detach(nk_thread_t *t){
+  
+    preempt_disable();
+
+    ASSERT(t->refcount > 0);
+
+    /* remove me from my parent's child list */
+    list_del(&(t->child_node));
+
+    --t->refcount;
+
+    // conditional reaping is done by the scheduler when threads are created
+    // this makes the join+exit path much faster in the common case and 
+    // bulks reaping events together
+    // the user can also explictly reap when needed
+    // plus the autoreaper thread can be enabled 
+    // the following code can be enabled if you want to reap immediately once
+    // a thread's refcount drops to zero
+    // 
+    if (t->refcount==0) { 
+       nk_thread_destroy(t);
+    }
+
+    preempt_enable();
+
+    return 0;
+}
+
 int
 pthread_cancel (pthread_t thread)
 /*
@@ -32,8 +61,9 @@ pthread_cancel (pthread_t thread)
  * ------------------------------------------------------
  */
 {
+  //thread_detach(thread);
   BOGUS();
-  return 0;
+  return -1;
   /* NK_PROFILE_ENTRY(); */
   /* int result; */
   /* int cancel_self; */
