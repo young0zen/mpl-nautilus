@@ -48,8 +48,8 @@
 int pte_processInitialized = PTE_FALSE;
 pte_thread_t * pte_threadReuseTop = PTE_THREAD_REUSE_EMPTY;
 pte_thread_t * pte_threadReuseBottom = PTE_THREAD_REUSE_EMPTY;
-pthread_key_t pte_selfThreadKey = NULL;
-pthread_key_t pte_cleanupKey = NULL;
+pthread_key_t pte_selfThreadKey;
+pthread_key_t pte_cleanupKey;
 
 int pte_concurrency = 0;
 

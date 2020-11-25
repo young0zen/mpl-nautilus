@@ -3,7 +3,7 @@
 #include <nautilus/list.h>
 #include <nautilus/scheduler.h>
 
-#define SLEEP_COUNT  0xffffffffffffffff 
+#define SLEEP_COUNT  0x10 
 
 void ssem_init(simple_sem_t *s, int initial_count){
   NK_LOCK_INIT(&s->lock);

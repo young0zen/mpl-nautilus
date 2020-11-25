@@ -59,7 +59,7 @@ pthread_kill (pthread_t thread, int sig)
 
   /* pte_osMutexUnlock(pte_thread_reuse_lock); */
   if (thread == NULL){
-    result == ESRCH;
+    result = ESRCH;
   }
   if (0 == result && 0 != sig)
     {

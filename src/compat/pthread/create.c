@@ -41,7 +41,7 @@ pthread_create (pthread_t * ptid,
     {
       a = NULL;
     }
-if ((parms = (ThreadParms *) malloc (sizeof (*parms))) == NULL)
+if ((parms = (thread_parms *) malloc (sizeof (*parms))) == NULL)
     {
       goto FAIL0;
     }
@@ -71,9 +71,9 @@ if ((parms = (ThreadParms *) malloc (sizeof (*parms))) == NULL)
   
 
   struct sys_info *sys = per_cpu_get(system);
-  COUNT = (++COUNT) % sys->num_cpus;
+  int cpu_num = (COUNT++)% sys->num_cpus;
   
-  int ret = nk_thread_start((void*)(&pte_thread_start), parms, NULL, 0, (nk_stack_size_t)stack_size, ptid, 0);
+  int ret = nk_thread_start((void*)(&pte_thread_start), parms, NULL, 0, (nk_stack_size_t)stack_size, ptid, cpu_num);
   if (ret != 0){
     ERROR("create error exit\n");
     osResult = PTE_OS_NO_RESOURCES;
@@ -88,7 +88,7 @@ if ((parms = (ThreadParms *) malloc (sizeof (*parms))) == NULL)
                                 stackSize,
                                 priority,
                                 parms,
-                                &(tp->threadId));
+                                &(tp->threadId));*/
   /*
    * ------------
    * Failure Code
