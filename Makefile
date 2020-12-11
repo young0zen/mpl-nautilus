@@ -8,6 +8,7 @@ NAME=Nautilus
 ISO_NAME:=nautilus.iso
 BIN_NAME:=nautilus.bin
 SYM_NAME:=nautilus.syms
+SEC_NAME:=nautilus.secs
 BC_NAME:=nautilus.bc
 LL_NAME:=nautilus.ll
 
@@ -621,7 +622,7 @@ ifdef NAUT_CONFIG_OPENMP_RT_OMP
 endif
 
 ifdef NAUT_CONFIG_PALACIOS
-  PALACIOS_DIR=$(subst ",,$(NAUT_CONFIG_PALACIOS_DIR))
+  PALACIOS_DIR=$(subst "",,$(NAUT_CONFIG_PALACIOS_DIR))
   CFLAGS += -I$(PALACIOS_DIR)/nautilus -I$(PALACIOS_DIR)/palacios/include
   libs-y += $(PALACIOS_DIR)/libv3vee.a $(PALACIOS_DIR)/libnautilus.a
   LDFLAGS         +=  --whole-archive -dp
@@ -758,7 +759,10 @@ $(BIN_NAME): $(nautilus)
 $(SYM_NAME): $(BIN_NAME)
 	@scripts/gen_sym_file.sh $(BIN_NAME) tmp.sym
 
-nautilus: $(BIN_NAME) $(SYM_NAME)
+$(SEC_NAME): $(BIN_NAME)
+	@scripts/gen_sec_file.sh $(BIN_NAME) tmp.sec
+
+nautilus: $(BIN_NAME) $(SYM_NAME) $(SEC_NAME)
 
 # New function to run a Python script which generates Lua test code,
 # addition of a separate flag (LUA_BUILD_FLAG) which is set to indicate
@@ -779,7 +783,7 @@ quiet_cmd_isoimage = MKISO   $(ISO_NAME)
 define cmd_isoimage 
 	mkdir -p .iso/boot/grub && \
 	cp configs/grub.cfg .iso/boot/grub && \
-	cp $(BIN_NAME) $(SYM_NAME) .iso/boot && \
+	cp $(BIN_NAME) $(SYM_NAME) $(SEC_NAME) .iso/boot && \
 	$(GRUBMKRESCUE) -o $(ISO_NAME) .iso >/dev/null 2>&1 && \
 	rm -rf .iso
 endef
@@ -888,7 +892,7 @@ depend dep:
 
 # Directories & files removed with 'make clean'
 CLEAN_DIRS  += $(MODVERDIR)
-CLEAN_FILES +=	 nautilus.asm $(SYM_NAME) $(ISO_NAME) $(BIN_NAME) \
+CLEAN_FILES +=	 nautilus.asm $(SYM_NAME) $(SEC_NAME) $(ISO_NAME) $(BIN_NAME) \
                  .tmp_version .tmp_nautilus*
 
 # Directories & files removed with 'make mrproper'

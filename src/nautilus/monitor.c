@@ -28,6 +28,9 @@
 #include <nautilus/monitor.h>
 #include <nautilus/dr.h>
 #include <nautilus/smp.h>
+#ifdef NAUT_CONFIG_PROVENANCE
+#include <nautilus/provenance.h>
+#endif
 #include <dev/apic.h>
 
 
@@ -1067,18 +1070,42 @@ monitor_print_regs (struct nk_regs * r)
   PRINT2CR(cr4, "   ", cr8, "   ");
 }
 
+#ifdef NAUT_CONFIG_PROVENANCE
+static void print_prov_info(uint64_t addr) {
+	provenance_info* prov_info = nk_prov_get_info(addr);
+	if (prov_info != NULL) {
+		DS((prov_info->symbol != NULL) ? (char*) prov_info->symbol : "???");
+		DS(" ");
+		DS((prov_info->section != NULL) ? (char*) prov_info->section : "???");
+		if (prov_info->line_info != NULL) {
+			// TODO: print line info
+		}
+		if (prov_info->file_info != NULL) {
+			// TODO: print file info
+		}
+		free(prov_info);
+	}
+	DS("\n");
+}
+#endif
 
 static void dump_call(void)
 {
   print_drinfo();
   DS("[------------------ Backtrace ------------------]\n");
+#ifdef NAUT_CONFIG_PROVENANCE
+#define PROV(addr) print_prov_info(addr)
+#else
+#define PROV(addr) 
+#endif
 
 // avoid reliance on backtrace.h
 #define BT(k) \
   if (!__builtin_return_address(k)) { \
       goto done; \
   } \
-  DHQ(((uint64_t)__builtin_return_address(k))); DS("\n");	\
+  DHQ(((uint64_t)__builtin_return_address(k))); DS(": ");	\
+  PROV((uint64_t)__builtin_return_address(k));	\
 
   BT(0);
   BT(1);

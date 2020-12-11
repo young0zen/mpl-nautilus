@@ -148,6 +148,10 @@
 #include <gc/bdwgc/bdwgc.h>
 #endif
 
+#ifdef NAUT_CONFIG_PROVENANCE
+#include <nautilus/provenance.h>
+#endif
+
 #ifdef NAUT_CONFIG_ENABLE_PDSGC
 #include <gc/pdsgc/pdsgc.h>
 #endif
@@ -410,6 +414,10 @@ init (unsigned long mbd,
 
     nk_sched_init(&sched_cfg);
 
+#ifdef NAUT_CONFIG_PROVENANCE
+	nk_prov_init();
+#endif
+
 #ifdef NAUT_CONFIG_CACHEPART
 #ifdef NAUT_CONFIG_CACHEPART_INTERRUPT
     nk_cache_part_init(NAUT_CONFIG_CACHEPART_THREAD_DEFAULT_PERCENT,
@@ -568,6 +576,7 @@ init (unsigned long mbd,
     nk_launch_shell("root-shell",0,0,0);
 
     runtime_init();
+
 
     printk("Nautilus boot thread yielding (indefinitely)\n");
 
