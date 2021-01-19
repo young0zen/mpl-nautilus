@@ -27,6 +27,7 @@ void ssem_post(simple_sem_t *s, int count){
     
     NK_LOCK(&s->lock);
     s->count+=count;
+    DEBUG("ssem_post:  count: %d \n", s->count);
     if(s->sleepcount > 0){
       DEBUG("ssem_post: sleep count: %d \n", s->sleepcount);
       int a = count;
@@ -106,7 +107,6 @@ void ssem_wait( simple_sem_t *s){
            DEBUG("ssem wait wakeup in queue sem %p\n", s);
     }
   }
-
 
 
 }
