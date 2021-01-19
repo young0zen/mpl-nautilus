@@ -4,6 +4,7 @@
 #include <nautilus/scheduler.h>
 
 #define SLEEP_COUNT  0x10 
+#define SPIN_TIME_NS 5000
 
 void ssem_init(simple_sem_t *s, int initial_count){
   NK_LOCK_INIT(&s->lock);
@@ -56,8 +57,8 @@ int ssem_timedwait( simple_sem_t *s, uint64_t timeout_ns){
       }
       
       NK_UNLOCK(&s->lock);
-      //nk_yield();
-      __asm__("pause");
+      nk_yield();
+      //__asm__("pause");
       
       now = nk_sched_get_realtime();
       
@@ -92,31 +93,20 @@ inline void force_sleep(simple_sem_t *sem){
 
 
 void ssem_wait( simple_sem_t *s){
-    
-   //int ori =  __sync_fetch_and_sub(&(s->count), 1);
-   int wait_count = 0;   
-   while(1){
 
-      if(s == NULL){
-        return;
-      }
+  int busy_wait = 0;
+  while(1){	
+    busy_wait = ssem_timedwait(s, SPIN_TIME_NS);
+    if (busy_wait == 0){
+       return;
+    }else{
+           s->sleepcount++;
+           DEBUG("ssem wait in queue sem %p\n", s);
+           force_sleep(s);
+           DEBUG("ssem wait wakeup in queue sem %p\n", s);
+    }
+  }
 
-      NK_LOCK(&s->lock);
-      if(s->count > 0){
-	s->count--;
-        break;
-      }
 
-      wait_count++;
-      
-      if(wait_count > SLEEP_COUNT) {
-	   s->sleepcount++;
-	   wait_count = 0;
-	   force_sleep(s->wait_queue); 
-      }else{
-          NK_UNLOCK(&s->lock);
-	  nk_yield();
-      }
-   }
-    NK_UNLOCK(&s->lock);
+
 }
