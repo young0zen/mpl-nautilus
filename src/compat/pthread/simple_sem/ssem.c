@@ -18,8 +18,8 @@ void ssem_destroy(simple_sem_t *s){
    NK_LOCK(&s->lock);
    nk_wait_queue_wake_all(s->wait_queue);
    nk_wait_queue_destroy(s->wait_queue);
-   free(s);
    NK_UNLOCK(&s->lock);
+   free(s);
    return;
 
 }
@@ -49,6 +49,7 @@ int ssem_timedwait( simple_sem_t *s, uint64_t timeout_ns){
 
    do{
       if (s == NULL){
+        ERROR("ssem_timedwait NULL sem\n");
         return 0;
       }
       NK_LOCK(&s->lock);
@@ -64,7 +65,7 @@ int ssem_timedwait( simple_sem_t *s, uint64_t timeout_ns){
       now = nk_sched_get_realtime();
       
       if( now-start > timeout_ns){
-         NK_UNLOCK(&s->lock);
+         //NK_UNLOCK(&s->lock);
 	 return 1;
       }
 
@@ -77,17 +78,17 @@ int ssem_timedwait( simple_sem_t *s, uint64_t timeout_ns){
 inline void force_sleep(simple_sem_t *sem){
        // we need to gracefully put ourselves to sleep
         nk_thread_t *t = get_cur_thread();
-
         // disable preemption early since interrupts may remain on given our locking model
         preempt_disable();
-
         // onto the semaphore's wait queue we go
         t->status = NK_THR_WAITING;
         nk_wait_queue_enqueue(sem->wait_queue,t);
-
         // and go to sleep - this will also release the lock
         // and reenable preemption
-        nk_sched_sleep(&sem->lock);
+	nk_sched_sleep(&sem->lock);
+
+	return;
+
 
    //nk_wait_queue_sleep_extended(t, 0, 0);
 } 
@@ -101,9 +102,16 @@ void ssem_wait( simple_sem_t *s){
     if (busy_wait == 0){
        return;
     }else{
+	   NK_LOCK(&s->lock);
+	   //check condition again before sleep;
+	   if(s->count > 0){
+             s->count--;
+	     NK_UNLOCK(&s->lock);
+             return;
+           }
            s->sleepcount++;
            DEBUG("ssem wait in queue sem %p\n", s);
-           force_sleep(s);
+	   force_sleep(s);
            DEBUG("ssem wait wakeup in queue sem %p\n", s);
     }
   }
