@@ -256,6 +256,12 @@ config PARTITION_SUPPORT
     help
       Enable disk/device partitioning
 
+config USE_IST 
+    bool "Enable IST"
+    default n
+    help
+      Enable IST (separate interrupt stacks)
+
 config VIRTUAL_CONSOLE_DISPLAY_NAME
    bool "Display name of current virtual console"
    default y
