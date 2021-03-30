@@ -617,6 +617,10 @@ endif # NAUT_CONFIG_CXX_SUPPORT
 
 			   #/usr/lib64/libc.a \
 
+ifdef NAUT_CONFIG_VIRGIL_RT
+   libs-y += $(NAUT_CONFIG_VIRGIL_RT_LIBRARY)
+endif
+
 ifdef NAUT_CONFIG_OPENMP_RT_OMP
    libs-y += $(NAUT_CONFIG_OPENMP_RT_INSTALL_DIR)/lib/libomp.a
 endif

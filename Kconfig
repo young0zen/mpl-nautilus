@@ -1471,6 +1471,30 @@ menu "Runtimes"
             help 
               Include OpenMP simple tests and Edinburgh microbenchmarks
 
+       config VIRGIL_RT
+            bool "Virgil RT"
+	    default n
+	    help
+	      Include the Virgil run-time
+
+       config VIRGIL_RT_LIBRARY
+            string "Path to application codebase (.a or .o)"
+	    default "/home/simone/test/virgil1/virgil1.o"
+	    depends on VIRGIL_RT
+	    help
+	       The path to the code that has been compiled to
+	       use the virgil runtime.  This will be statically linked
+	       to Nautilus and its entry point,
+	       smain(int argc, char *argv[])
+	       will be bound to the shell command "virgil ..."
+
+       config VIRGIL_RT_DEBUG
+            bool "Debug Virgil RT"
+	    default n
+	    depends on VIRGIL_RT
+	    help
+	      Debugging output from the Virgil run-time
+
        config RACKET_RT
             bool "Racket RT (via Multiverse)";
 	    default y
