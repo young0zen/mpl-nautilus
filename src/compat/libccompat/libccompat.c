@@ -238,6 +238,11 @@ vfprintf (FILE * stream, const char * format, va_list arg)
 #endif
 }
 
+int puts(char *s)
+{
+  return nk_vc_puts(s);
+}
+
 
 int 
 rand (void) {
@@ -895,6 +900,7 @@ GEN_UNDEF(int,iswctype,0)
 GEN_UNDEF(int,wcsftime,0)
 GEN_UNDEF(int,wctype,0)
 GEN_UNDEF(int,strtold,0)
+GEN_UNDEF(int,strtoul,0)
 //GEN_UNDEF(int,strtod,0)
 GEN_UNDEF(int,strtof,0)
 GEN_UNDEF(int,__ctype_b_loc,0)
@@ -974,3 +980,13 @@ GEN_UNDEF(int,vfscanf,0)
 GEN_UNDEF(int,__isoc99_sscanf,0)
 GEN_UNDEF(int,__isoc99_vfscanf,0)
 GEN_UNDEF(int,__isoc99_fscanf,0)	
+
+
+int posix_memalign(void **memptr, size_t alignment, size_t size)
+{
+  // assume alignment is a power of two, although we should check
+  *memptr = malloc(size); // will be aligned to next power of 2 size
+  
+  return *memptr ? 0 : ENOMEM;
+ 
+}  
