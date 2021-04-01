@@ -143,12 +143,15 @@ double floor(double x)
     return x;
 }
 
+/*
 double sqrt(double x)
 {
     BOGUS();
     return x;
 }
+*/
 
+/*
 double pow(double x, double y)
 {
     BOGUS();
@@ -162,18 +165,20 @@ double log(double x)
     BOGUS();
     return x;
 }
-
+*/
 double log10(double x)
 {
     BOGUS();
     return x;
 }
 
+/*
 double exp(double x)
 {
     BOGUS();
     return x;
 }
+*/
 
 #define CLD double // complex long double
 #define CD  double // complex double

@@ -946,6 +946,8 @@ GEN_UNDEF(int,pthread_setspecific,0)
 GEN_UNDEF(int,sched_yield,0)
 #endif
 
+//for virgil	
+GEN_UNDEF(int, __sprintf_chk,0)
 
 GEN_UNDEF(int,atexit,0)
 GEN_UNDEF(int,catclose,0)
