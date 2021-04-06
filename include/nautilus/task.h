@@ -116,4 +116,12 @@ void nk_task_system_snapshot(nk_task_system_snapshot_t *snap, uint64_t *idle_cpu
 
 // Note that the implementation of tasks in scheduler.c
 
+// used for task runners elsewhere in kernel
+#ifdef NAUT_CONFIG_TASK_TRAMPOLINE
+void *nk_task_trampoline(void * (*task)(void *), void*);
+#define NK_TASK_RUN(t) nk_task_trampoline((t)->func,(t)->input)
+#else
+#define NK_TASK_RUN(t) (t)->func((t)->input)
+#endif
+
 #endif

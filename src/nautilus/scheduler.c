@@ -75,7 +75,7 @@
 
 // task and idle threads run tasks, and so their stacks
 // need to be sized to be sensible for those tasks
-#define TASK_THREAD_STACK_SIZE (PAGE_SIZE_2MB)
+#define TASK_THREAD_STACK_SIZE (16*PAGE_SIZE_2MB)
 #define IDLE_THREAD_STACK_SIZE (PAGE_SIZE_2MB)
 
 // interrupt and reaper threads are self-contained here, so
@@ -116,6 +116,10 @@
 #endif
 #endif
 
+#ifdef NAUT_CONFIG_DEBUG_TASKS
+#undef TASK_DEBUG
+#define TASK_DEBUG(fmt, args...) DEBUG_PRINT("task: " fmt, ##args)
+#endif
 
 #ifndef MIN
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
@@ -3728,10 +3732,12 @@ static int task_initial_placement()
 }
 
 
+
+  
 struct nk_task *nk_task_produce(int cpu, uint64_t size_ns, void *(*f)(void*), void *input, uint64_t flags)
 {
     TASK_LOCK_CONF;
-    
+
     int placement_cpu = cpu>=0 ? cpu : task_initial_placement();
     uint64_t start = cur_time();
     
@@ -3756,6 +3762,9 @@ struct nk_task *nk_task_produce(int cpu, uint64_t size_ns, void *(*f)(void*), vo
     struct sys_info * sys = per_cpu_get(system);
     task_info *ti = &sys->cpus[placement_cpu]->sched_state->tasks;
 
+    TASK_DEBUG("mapping task %p to cpu %d\n", t,placement_cpu);
+
+    
     // own the target scheduler's task queue
     TASK_LOCK(ti);
     if (t->stats.size_ns) {
@@ -3770,6 +3779,8 @@ struct nk_task *nk_task_produce(int cpu, uint64_t size_ns, void *(*f)(void*), vo
     // kick any waitqueue
     nk_wait_queue_wake_all(ti->waitq);
 
+    TASK_DEBUG("task produce %p done\n", t);
+    
     return t;
 }
 
@@ -3784,7 +3795,9 @@ static int task_cpu_selection()
 static struct nk_task *_nk_task_consume(int cpu, uint64_t size_ns, uint64_t search_limit, int try)
 {
     TASK_LOCK_CONF;
-    
+
+    TASK_DEBUG("try consume\n");
+
     int source_cpu = cpu>=0 ? cpu : task_cpu_selection();
 
     struct sys_info * sys = per_cpu_get(system);
@@ -3841,6 +3854,7 @@ static struct nk_task *_nk_task_consume(int cpu, uint64_t size_ns, uint64_t sear
 	t->stats.dequeue_time_ns = cur_time();
     }
 	
+    TASK_DEBUG("try consume found task %p\n",t);
     return t;
 }    
 
@@ -3859,6 +3873,7 @@ struct nk_task *nk_task_try_consume(int cpu, uint64_t size_ns, uint64_t search_l
 // this will delete the task if it's detached
 int nk_task_complete(struct nk_task *task, void *output)
 {
+  TASK_DEBUG("task %p complete\n",task);
     task->output = output;
     // setting the flag must occur *after* setting the output
     __sync_fetch_and_or(&task->flags,NK_TASK_COMPLETED);
@@ -3900,7 +3915,7 @@ static int _nk_task_wait(struct nk_task *task, void **output, struct nk_task_sta
 	    }
 	    if (t) {
 		// found task; run it and complete it
-		output = t->func(t->input);
+	        output = NK_TASK_RUN(t);
 		nk_task_complete(t,output);
 	    }
 	}
@@ -4112,7 +4127,7 @@ static void task(void *in, void **out)
 	}
 	if (t) {
 	    // found task; run it and complete it
-	    output = t->func(t->input);
+	    output = NK_TASK_RUN(t);
 	    nk_task_complete(t,output);
 	} else {
 	    // no task, let's put ourselves to sleep on our own cpu's task queues

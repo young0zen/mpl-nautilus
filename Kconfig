@@ -441,6 +441,13 @@ config VIRTUAL_CONSOLE_SERIAL_MIRROR_ALL
 	  which of these behaviors you want if you are executing tasks
 	  in idle loops.
 	  
+    config TASK_TRAMPOLINE
+       bool "Trampoline tasks"
+       default false
+       help
+          When enabled, each task is run via a trampoline that does register
+	  save/restore, thus the task does not need to follow callee save conventions.
+
     config INTERRUPT_THREAD
        bool "Restrict interrupts to special real-time interrupt thread"
        default false
