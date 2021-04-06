@@ -323,7 +323,6 @@ nk_thread_create (nk_thread_fun_t fun,
 	// we have succeeded in reanimating a dead thread, so
 	// now all we need to do is the management that
 	// nk_thread_destroy() would otherwise have done
-        printf("!!!!!!!!!!ATTENTION skip creation\n");
 	nk_thread_brain_wipe(t);
 
 	
@@ -549,6 +548,10 @@ static void* nk_thread_set_tls(int placement_cpu)
  //   uint64_t align = 16;
     uint64_t slack = 64;
     tls_loc = malloc_specific(datasize+bsssize+slack, placement_cpu);
+    if (!tls_loc) {
+      THREAD_ERROR("Cannot allocate tls space for thread\n");
+      return 0;
+    }
  //   printf("=======tls loc %p \n", tls_loc);
     memset(tls_loc, 0, datasize+bsssize);
 
@@ -557,10 +560,10 @@ static void* nk_thread_set_tls(int placement_cpu)
      *  |  |  |  |  | tdata | tdata | tdata | tbss |tbss|tcb|  
      * ------------------------------------------------------
     */
-    memcpy(tls_loc, tdata_start, datasize);
+    memcpy(tls_loc, (void*)tdata_start, datasize);
   // printf("hwtls : %p \n", tls_loc+datasize+bsssize); 
 
-   uint64_t fsbase = tls_loc+datasize+bsssize;
+    uint64_t fsbase = (uint64_t)(tls_loc+datasize+bsssize);
 
 #if 1 //force fs:0x0 to have value fsbase
     asm volatile("push %rax");

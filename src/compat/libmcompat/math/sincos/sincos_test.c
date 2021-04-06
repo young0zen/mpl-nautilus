@@ -15,7 +15,7 @@ nk_register_shell_cmd(nas_sincos_impl);
 c-------------------------------------------------------------------*/
 static int sincos(char *__buf, void* __priv) {
 
-  printf("sin : %lf, cos : %lf \n", sin(0.567),cos(9.087));
-
+  nk_vc_printf("sin : %lf, cos : %lf \n", sin(0.567),cos(9.087));
+  return 0;
 }
 

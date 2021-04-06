@@ -41,12 +41,13 @@ NK_PROFILE_EXIT();
 return k * LOG2_HI - ((hfsq - (s * (hfsq + R) + k * LOG2_LOW)) - f);
 }
 
-//int main(){ \
-  double input; \
-  scanf("%lf", &input); \
-  double lo = log(input); \
-  printf("lo %f \n",lo); \
-\
+/*
+int main(){ 
+  double input; 
+  scanf("%lf", &input); 
+  double lo = log(input); 
+  printf("lo %f \n",lo); 
 }
+*/
 
 #endif

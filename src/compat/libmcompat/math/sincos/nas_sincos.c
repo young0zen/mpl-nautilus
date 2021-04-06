@@ -8,12 +8,13 @@
 
 #define fabs(x) __builtin_fabs(x)
 
-//extern const union \
-{ \
-  int4 i[880]; \
-  double x[440]; \
+/*
+extern const union 
+{ 
+  int4 i[880]; 
+  double x[440]; 
 } __sincostab;
-
+*/
 
 
 
