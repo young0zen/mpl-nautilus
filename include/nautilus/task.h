@@ -111,7 +111,13 @@ void nk_task_cpu_snapshot(int cpu, nk_task_cpu_snapshot_t *snap);
 // approximate number of tasks waiting to run on all cpus
 void nk_task_system_snapshot(nk_task_system_snapshot_t *snap, uint64_t *idle_cpu_count);
 
-
+// restrict CPUs that are allowed to consume tasks
+// After calling this, you cannot produce a task for an out-of-range CPU
+// and you cannot consume a task on an out-of-range CPU.
+// No synchronization is done - it's the caller's responsibility to
+// drain all tasks before calling this function.   If you don't,
+// a race condition could leave a task stranded on an out-of-range CPU
+int  nk_task_cpu_restrict(uint64_t first_cpu, uint64_t num_cpus);
 
 
 // Note that the implementation of tasks in scheduler.c

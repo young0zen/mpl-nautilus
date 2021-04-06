@@ -268,13 +268,23 @@ static int _nk_virgil_entry_test(int argc, char *argv[])
 int smain(int argc, char *argv[]);
 
 #define MAXCMD 256
-    
+
 static int
 handle_virgil(char * buf, void * priv)
 {
     char b[MAXCMD];
     char *argv[MAXCMD];
     int argc=0;
+    uint64_t numcpus;
+
+
+    if (sscanf(buf,"virgil _numcpus %lu",&numcpus)==1) {
+      nk_vc_printf("using CPUs [0,%lu)\n",numcpus);
+      if (nk_task_cpu_restrict(0,numcpus)) {
+	nk_vc_printf("cannot apply restriction\n");
+      }
+      return 0;
+    }
     
     strncpy(b,buf,MAXCMD); b[MAXCMD-1]=0;
 

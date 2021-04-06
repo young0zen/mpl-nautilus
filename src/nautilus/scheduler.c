@@ -202,6 +202,7 @@ static volatile uint8_t      stop_flags;
 
 static struct nk_sched_global_state global_sched_state;
 
+
 //
 // List implementation for use in scheduler
 // Avoids changing thread structures
@@ -275,6 +276,15 @@ static rt_thread* rt_priority_queue_peek(rt_priority_queue *queue, uint64_t pos)
 static rt_thread* rt_priority_queue_remove(rt_priority_queue *queue, rt_thread *thread);
 static int        rt_priority_queue_empty(rt_priority_queue *queue);
 static void       rt_priority_queue_dump(rt_priority_queue *queue, char *pre);
+
+// Global task state
+typedef struct nk_task_global_state {
+  uint64_t first_cpu;
+  uint64_t num_cpus;
+} nk_task_global_state_t;
+
+static volatile nk_task_global_state_t global_task_state;
+
 
 //
 // Per-CPU scheduler state - hangs off off global cpu struct
@@ -3727,10 +3737,16 @@ static inline uint64_t get_min_per(rt_priority_queue *runnable, rt_priority_queu
 
 static int task_initial_placement()
 {
-    struct sys_info * sys = per_cpu_get(system);
-    return (int)(get_random() % sys->num_cpus);
+  return (int)(global_task_state.first_cpu + get_random() % global_task_state.num_cpus);
 }
 
+int  nk_task_cpu_restrict(uint64_t first_cpu, uint64_t num_cpus)
+{
+  global_task_state.first_cpu = first_cpu;
+  global_task_state.num_cpus = num_cpus;
+  TASK_DEBUG("restricting task production and consumption to CPUs [%lu,%lu)\n", global_task_state.first_cpu, global_task_state.num_cpus);
+  return 0;
+}
 
 
   
@@ -3738,7 +3754,21 @@ struct nk_task *nk_task_produce(int cpu, uint64_t size_ns, void *(*f)(void*), vo
 {
     TASK_LOCK_CONF;
 
-    int placement_cpu = cpu>=0 ? cpu : task_initial_placement();
+    int placement_cpu;
+
+    if (cpu>=0) {
+      if (!((cpu >= global_task_state.first_cpu)  &&
+	    (cpu < (global_task_state.first_cpu + global_task_state.num_cpus)))) {
+	TASK_ERROR("cannot produce task for out of limit cpu %d\n",cpu);
+	return 0;
+      } else {
+	placement_cpu = cpu;
+      }
+    } else {
+	placement_cpu =  task_initial_placement();
+    }
+
+    
     uint64_t start = cur_time();
     
     struct nk_task *t = MALLOC_SPECIFIC(sizeof(struct nk_task),placement_cpu);
@@ -3786,18 +3816,25 @@ struct nk_task *nk_task_produce(int cpu, uint64_t size_ns, void *(*f)(void*), vo
 
 static int task_cpu_selection()
 {
-    struct sys_info * sys = per_cpu_get(system);
-    return (int)(get_random() % sys->num_cpus);
+  return (int)(global_task_state.first_cpu + get_random() % global_task_state.num_cpus);
 }
 
 // dequeue a task, typically used internally
 // dequeuing a task does not execute it.
 static struct nk_task *_nk_task_consume(int cpu, uint64_t size_ns, uint64_t search_limit, int try)
 {
+    int me = my_cpu_id();
+    
     TASK_LOCK_CONF;
 
     TASK_DEBUG("try consume\n");
 
+    if (!((me >= global_task_state.first_cpu)  &&
+	  (me < (global_task_state.first_cpu + global_task_state.num_cpus)))) {
+      TASK_DEBUG("cannot consume because %d is not within the limit\n",me);
+      return 0;
+    }
+    
     int source_cpu = cpu>=0 ? cpu : task_cpu_selection();
 
     struct sys_info * sys = per_cpu_get(system);
@@ -3917,6 +3954,8 @@ static int _nk_task_wait(struct nk_task *task, void **output, struct nk_task_sta
 		// found task; run it and complete it
 	        output = NK_TASK_RUN(t);
 		nk_task_complete(t,output);
+	    } else {
+	      nk_yield();
 	    }
 	}
     }
@@ -4276,6 +4315,10 @@ static int init_global_state()
 
     nk_counting_barrier_init(&stop_barrier,nk_get_num_cpus());
 
+    ZERO((void*)&global_task_state);
+    global_task_state.first_cpu=0;
+    global_task_state.num_cpus=nk_get_num_cpus();
+    
     return 0;
 
 }
