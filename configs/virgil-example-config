@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 #Nautilus: 
-# Tue Apr  6 15:49:30 2021
+# Thu Apr  8 10:23:32 2021
 #
 
 #
@@ -19,7 +19,7 @@ NAUT_CONFIG_MAX_IOAPICS=16
 # Build
 #
 NAUT_CONFIG_USE_NAUT_BUILTINS=y
-# NAUT_CONFIG_CXX_SUPPORT is not set
+NAUT_CONFIG_CXX_SUPPORT=y
 # NAUT_CONFIG_RUST_SUPPORT is not set
 # NAUT_CONFIG_USE_GCC is not set
 NAUT_CONFIG_USE_CLANG=y
@@ -158,6 +158,8 @@ NAUT_CONFIG_DEBUG_PRINTS=y
 #
 # Runtimes
 #
+# NAUT_CONFIG_LEGION_RT is not set
+# NAUT_CONFIG_NDPC_RT is not set
 # NAUT_CONFIG_NESL_RT is not set
 # NAUT_CONFIG_OPENMP_RT is not set
 NAUT_CONFIG_VIRGIL_RT=y
