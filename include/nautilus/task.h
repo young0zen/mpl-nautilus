@@ -36,6 +36,8 @@
 #define TASK_WARN(fmt, args...)  WARN_PRINT("task: " fmt, ##args)
 
 
+
+
 struct nk_task_stats {
     uint64_t    size_ns;       // a size of zero means the task has unknown size
     uint64_t    enqueue_time_ns;
@@ -43,6 +45,12 @@ struct nk_task_stats {
     uint64_t    complete_time_ns;
     uint64_t    wait_start_ns;
     uint64_t    wait_end_ns;
+#ifdef NAUT_CONFIG_TASK_DEEP_STATISTICS
+    uint64_t    create_cost_cycles;
+    uint64_t    enqueue_cost_cycles;
+    uint64_t    dequeue_cost_cycles;
+    uint64_t    destroy_cost_cycles;
+#endif
 };
     
 struct nk_task {

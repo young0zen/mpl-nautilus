@@ -3756,6 +3756,11 @@ struct nk_task *nk_task_produce(int cpu, uint64_t size_ns, void *(*f)(void*), vo
 
     int placement_cpu;
 
+#if NAUT_CONFIG_TASK_DEEP_STATISTICS
+    uint64_t start_cycles = rdtsc();
+#endif
+    uint64_t start_ns = cur_time();
+
     if (cpu>=0) {
       if (!((cpu >= global_task_state.first_cpu)  &&
 	    (cpu < (global_task_state.first_cpu + global_task_state.num_cpus)))) {
@@ -3769,8 +3774,6 @@ struct nk_task *nk_task_produce(int cpu, uint64_t size_ns, void *(*f)(void*), vo
     }
 
     
-    uint64_t start = cur_time();
-    
     struct nk_task *t = MALLOC_SPECIFIC(sizeof(struct nk_task),placement_cpu);
 
     if (!t) {
@@ -3780,15 +3783,23 @@ struct nk_task *nk_task_produce(int cpu, uint64_t size_ns, void *(*f)(void*), vo
 
     memset(t,0,sizeof(*t));
 
-    t->stats.size_ns = size_ns;
-    t->stats.enqueue_time_ns = start;
     
     t->flags = flags & ~NK_TASK_COMPLETED;
     t->func = f;
     t->input = input;
 
     INIT_LIST_HEAD(&t->queue_node);
+    
+    t->stats.size_ns = size_ns;
+    t->stats.enqueue_time_ns = start_ns;
+    
+#if NAUT_CONFIG_TASK_DEEP_STATISTICS
+    t->stats.create_cost_cycles = rdtsc() - start_cycles;
+    start_cycles = rdtsc();
+#endif
+    
 
+    
     struct sys_info * sys = per_cpu_get(system);
     task_info *ti = &sys->cpus[placement_cpu]->sched_state->tasks;
 
@@ -3804,6 +3815,14 @@ struct nk_task *nk_task_produce(int cpu, uint64_t size_ns, void *(*f)(void*), vo
 	list_add_tail(&t->queue_node, &ti->unsized_queue);
 	ti->unsized_enqueued++;
     }
+
+#if NAUT_CONFIG_TASK_DEEP_STATISTICS
+    // capture enqueue cost early with lock held because otherwise
+    // we race with the consumer and waiter.   
+    // this misses the waitqueue kick cost.
+    t->stats.enqueue_cost_cycles = rdtsc() - start_cycles;
+#endif
+    
     TASK_UNLOCK(ti);
 
     // kick any waitqueue
@@ -3823,6 +3842,10 @@ static int task_cpu_selection()
 // dequeuing a task does not execute it.
 static struct nk_task *_nk_task_consume(int cpu, uint64_t size_ns, uint64_t search_limit, int try)
 {
+#ifdef NAUT_CONFIG_TASK_DEEP_STATISTICS
+    uint64_t start_cycles = rdtsc();
+#endif
+    
     int me = my_cpu_id();
     
     TASK_LOCK_CONF;
@@ -3889,6 +3912,9 @@ static struct nk_task *_nk_task_consume(int cpu, uint64_t size_ns, uint64_t sear
 
     if (t) {
 	t->stats.dequeue_time_ns = cur_time();
+#ifdef NAUT_CONFIG_TASK_DEEP_STATISTICS
+        t->stats.dequeue_cost_cycles = rdtsc() - start_cycles;
+#endif
     }
 	
     TASK_DEBUG("try consume found task %p\n",t);
@@ -3959,6 +3985,9 @@ static int _nk_task_wait(struct nk_task *task, void **output, struct nk_task_sta
 	    }
 	}
     }
+#ifdef NAUT_CONFIG_TASK_DEEP_STATISTICS
+    uint64_t start_cycles = rdtsc();
+#endif
 
     if (output) {
 	*output = task->output;
@@ -3970,8 +3999,15 @@ static int _nk_task_wait(struct nk_task *task, void **output, struct nk_task_sta
 	*stats = task->stats;
     }
 
+    
     free(task);
 
+#ifdef NAUT_CONFIG_TASK_DEEP_STATISTICS
+    if (stats) {
+      stats->destroy_cost_cycles = rdtsc() - start_cycles;
+    }
+#endif    
+    
     return 0;
 }
 

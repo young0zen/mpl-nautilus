@@ -454,6 +454,13 @@ config VIRTUAL_CONSOLE_SERIAL_MIRROR_ALL
           When enabled, each task is run via a trampoline that does register
 	  save/restore, thus the task does not need to follow callee save conventions.
 
+    config TASK_DEEP_STATISTICS
+       bool "Collect deeper statistics for each task"
+       default false
+       help
+          When enabled, additional task overheads are collected to help
+	  work on the task system.  These come at the cost of greater measurement overhead
+
     config INTERRUPT_THREAD
        bool "Restrict interrupts to special real-time interrupt thread"
        default false
