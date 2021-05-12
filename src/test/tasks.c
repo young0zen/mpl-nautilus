@@ -38,7 +38,7 @@
 
 #define NUM_PASSES 10
 #define NUM_TASKS  65536
-#define DEPTH      15      // should be 1 less than log NUM_TASKS
+#define DEPTH      15     // should be 1 less than log NUM_TASKS
 
 static struct nk_task *tasks[NUM_TASKS];
 

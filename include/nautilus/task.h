@@ -37,7 +37,8 @@
 
 
 
-
+// size of this structure under different cases
+// 6*8 = 48 bytes basic stats, 10*8=80 bytes deep stats
 struct nk_task_stats {
     uint64_t    size_ns;       // a size of zero means the task has unknown size
     uint64_t    enqueue_time_ns;
@@ -53,6 +54,12 @@ struct nk_task_stats {
 #endif
 };
     
+
+// size of this structure under different cases
+// basic stats, no reuse: (6+6)*8  = 96 bytes   (allocates 128)
+// basic states, reuse:   (6+7)*8  = 104 bytes  (allocates 128)
+// deep stats, no reuse:  (10+6)*8 = 128 bytes  (allocates 128)
+// deep stats, reuse:     (10+7)*8 = 136 bytes  (allocates 256)
 struct nk_task {
     // flags are written only on completion, so this can be used
     uint64_t    flags;
@@ -68,7 +75,13 @@ struct nk_task {
     void *output;
 
     // for managing tasks on queues
+    // A task is either in task queue, a reuse stack
+    // or in the process of being created or destroyed
     struct list_head queue_node;
+
+#ifdef NAUT_CONFIG_TASK_REUSE
+    int alloc_cpu; // the cpu for which this task has allocation affinity
+#endif
 };
 
 // a CPU-level snapshot - this is APPROXIMATE
@@ -126,6 +139,9 @@ void nk_task_system_snapshot(nk_task_system_snapshot_t *snap, uint64_t *idle_cpu
 // drain all tasks before calling this function.   If you don't,
 // a race condition could leave a task stranded on an out-of-range CPU
 int  nk_task_cpu_restrict(uint64_t first_cpu, uint64_t num_cpus);
+
+// use cpu=-1 for state on all cpus
+void nk_task_dump_state(int cpu);
 
 
 // Note that the implementation of tasks in scheduler.c
