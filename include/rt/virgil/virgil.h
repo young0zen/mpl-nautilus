@@ -64,6 +64,11 @@ typedef void * (*nk_virgil_func_t)(void *input);
 // number of workers / number of cpus in system
 int nk_virgil_get_num_cpus(void);
 
+// number of workers / number of cpus currently available
+// If this returns -1 => error
+// if it returns 0, the cpus from *first_cpu to *first_cpu + *num_cpus-1 are available
+int nk_virgil_get_num_available_cpus(uint32_t *first_cpu, uint32_t *num_cpus);
+
 // submit a task to any cpu
 nk_virgil_task_t nk_virgil_submit_task_to_any_cpu(nk_virgil_func_t func,
 						  void *input);

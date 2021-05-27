@@ -3758,6 +3758,14 @@ int  nk_task_cpu_restrict(uint64_t first_cpu, uint64_t num_cpus)
   return 0;
 }
 
+int  nk_task_cpu_get_restrict(uint64_t *first_cpu, uint64_t *num_cpus)
+{
+  *first_cpu = global_task_state.first_cpu;
+  *num_cpus = global_task_state.num_cpus;
+  TASK_DEBUG("get task production and consumption - response is CPUs [%lu,%lu)\n", *first_cpu, *num_cpus);
+  return 0;
+}
+
 
 // returns the task cleared and properly set up otherwise
 static inline struct nk_task *task_alloc(int cpu)

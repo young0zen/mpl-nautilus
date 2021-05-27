@@ -22,6 +22,16 @@ int nk_virgil_get_num_cpus(void)
     return nk_get_num_cpus();
 }
 
+int nk_virgil_get_num_available_cpus(uint32_t *first_cpu, uint32_t *num_cpus)
+{
+  uint64_t first, num;
+  int rc = nk_task_cpu_get_restrict(&first,&num);
+  *first_cpu = (uint32_t) first;  // yuck, I know
+  *num_cpus = (uint32_t) num;
+  return rc;
+}
+
+
 // submit a task to any cpu
 nk_virgil_task_t nk_virgil_submit_task_to_any_cpu(nk_virgil_func_t func,
 						  void *input)
@@ -133,15 +143,31 @@ int nk_virgil_check_for_task_completion(nk_virgil_task_t task, void **output)
 //          [in this case, do not check on the task again]
 int nk_virgil_wait_for_task_completion(nk_virgil_task_t task, void **output)
 {
-    DEBUG("wait on task %p\n", task);
+#define STATS 0
 
+    DEBUG("wait on task %p\n", task);
+ 
+#ifdef STATS  
+    struct nk_task_stats stats;
+    int rc = nk_task_wait((struct nk_task *)task,output,&stats);
+#else
     int rc = nk_task_wait((struct nk_task *)task,output,0);
+#endif
 
     DEBUG("wait result is %d\n", rc);
 
     if (rc<0) {
 	return rc;
     } else {
+#ifdef STATS
+        DEBUG("task completion: task %p, size %lu ns, enqueued at %lu ns, dequeued at %lu ns, completed at %lu ns, wait start at %lu ns, wait end at %lu ns\n",
+  	      task,stats.size_ns,stats.enqueue_time_ns,stats.dequeue_time_ns,stats.complete_time_ns,stats.wait_start_ns, stats.wait_end_ns);
+        DEBUG("task completion: task %p, queue wait time: %lu ns, service time (approx) %lu ns, response time %lu ns, wait time: %lu ns\n",
+	    task,stats.dequeue_time_ns - stats.enqueue_time_ns,
+	    stats.complete_time_ns - stats.dequeue_time_ns,
+	    stats.complete_time_ns - stats.enqueue_time_ns,
+	    stats.wait_end_ns - stats.wait_start_ns);
+#endif
 	// swap sense
 	return !rc;
     }
@@ -276,7 +302,6 @@ handle_virgil(char * buf, void * priv)
     char *argv[MAXCMD];
     int argc=0;
     uint64_t numcpus;
-
 
     if (sscanf(buf,"virgil _numcpus %lu",&numcpus)==1) {
       nk_vc_printf("using CPUs [0,%lu)\n",numcpus);

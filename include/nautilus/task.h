@@ -140,6 +140,9 @@ void nk_task_system_snapshot(nk_task_system_snapshot_t *snap, uint64_t *idle_cpu
 // a race condition could leave a task stranded on an out-of-range CPU
 int  nk_task_cpu_restrict(uint64_t first_cpu, uint64_t num_cpus);
 
+// get current CPU restrictions
+int  nk_task_cpu_get_restrict(uint64_t *first_cpu, uint64_t *num_cpus);
+
 // use cpu=-1 for state on all cpus
 void nk_task_dump_state(int cpu);
 
