@@ -1,1 +1,2 @@
 export PATH=/home/pdinda/llvm/bin:$PATH
+export PATH=$PATH:/home/software/qemu4/bin

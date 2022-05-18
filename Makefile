@@ -636,6 +636,16 @@ ifdef NAUT_CONFIG_OPENMP_RT_OMP
    libs-y += $(NAUT_CONFIG_OPENMP_RT_INSTALL_DIR)/lib/libomp.a
 endif
 
+ifdef NAUT_CONFIG_MPL_RT
+  #libs-y += `locate libm.a | head -1`
+  libs-y += $(NAUT_CONFIG_MPL_RT_OBJ_DIR)/mpl.0.o
+  libs-y += $(NAUT_CONFIG_MPL_RT_OBJ_DIR)/mpl.1.o
+  libs-y += $(NAUT_CONFIG_MPL_RT_DIR)/runtime/libmlton.a
+  libs-y += $(NAUT_CONFIG_MPL_RT_DIR)/runtime/libgdtoa.a
+  #libs-y += $(NAUT_CONFIG_MPL_RT_DIR)/examples/src/hello/hello_world.0.o
+  #libs-y += $(NAUT_CONFIG_MPL_RT_DIR)/examples/src/hello/hello_world.1.o
+endif
+
 ifdef NAUT_CONFIG_PALACIOS
   PALACIOS_DIR=$(subst "",,$(NAUT_CONFIG_PALACIOS_DIR))
   CFLAGS += -I$(PALACIOS_DIR)/nautilus -I$(PALACIOS_DIR)/palacios/include
