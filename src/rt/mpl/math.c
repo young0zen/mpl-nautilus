@@ -1,119 +1,122 @@
 #include <nautilus/nautilus.h>
+#include <nautilus/errno.h>
+
+#define BOGUS_FUN_ERR() ERROR_PRINT("Function (%s) is BOGUS\n", __func__)
 
 double acosf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
-
 }
 double asinf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double atan2f (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double atanf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double calloc (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double ceilf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double cosf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double coshf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double expf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double fabsf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double floorf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double fma (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double fmaf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double frexpf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double ldexpf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double log10f (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double logf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double modff (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double powf (double x) {
-	nk_vc_printf("acosf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double rint (double x) {
-	nk_vc_printf("rint");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double rintf (double x) {
-	nk_vc_printf("rintf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double sinf (double x) {
-	nk_vc_printf("sinf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double sinhf (double x) {
-	nk_vc_printf("sinhf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double sqrtf (double x) {
-	nk_vc_printf("sqrtf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double srand48_r (double x) {
-	nk_vc_printf("srand48_r");
+
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double tanf (double x) {
-	nk_vc_printf("tanf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double tanhf (double x) {
-	nk_vc_printf("tanhf");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double trunc (double x) {
-	nk_vc_printf("trunc");
+	BOGUS_FUN_ERR();
 	return 0;
 }
 double truncf (double x) {
-	nk_vc_printf("truncf");
+	BOGUS_FUN_ERR();
 	return 0;
 }

@@ -4,8 +4,7 @@
 * Guy Blelloch, Jonathan Hardwick, Jay Sipelstein, Marco Zagha
 *
 * All Rights Reserved.
-*
-* Permission to use, copy, modify and distribute this software and its
+* * Permission to use, copy, modify and distribute this software and its
 * documentation is hereby granted, provided that both the copyright
 * notice and this permission notice appear in all copies of the
 * software, derivative works or modified versions, and any portions

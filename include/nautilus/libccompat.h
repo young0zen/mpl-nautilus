@@ -165,6 +165,7 @@ int fprintf(FILE*, const char*, ...);
 int fputc(int, FILE*);
 int fputs(const char*, FILE*);
 size_t fwrite(const void*, size_t, size_t, FILE*);
+ssize_t write(int fd, const void *buf, size_t count);
 size_t fread(void * ptr, size_t size, size_t count, FILE * stream);
 int getwc(FILE * stream);
 size_t __ctype_get_mb_cur_max(void);
@@ -297,7 +298,7 @@ double exp(double x);
 GEN_HDR(writev)
 GEN_HDR(ungetwc)
 GEN_HDR(__errno_location)
-GEN_HDR(write)
+//GEN_HDR(write)
 GEN_HDR(wcrtomb)
 GEN_HDR(mbrtowc)
 //GEN_HDR(getc) 

@@ -1,9 +1,21 @@
 #include <nautilus/nautilus.h>
+#include <nautilus/thread.h>
+
 #include <nautilus/shell.h>
 
-static int test_mpl() {
-	nk_vc_printf("hello from mpl\n");
-	mpl_main();
+void
+test_mpl_hello_world(void *input, void **output) {
+	nk_vc_printf("testing mpl hello world\n");
+	char *argv[] = {"testmpl", 0};
+	mpl_main(1, argv);
+	nk_vc_printf("test done\n");
+}
+
+static int
+test_mpl() {
+	//THREAD_T t;
+	nk_thread_start(test_mpl_hello_world, NULL, NULL, 1, PAGE_SIZE_4KB, NULL, -1);
+	//test_mpl_hello_world(NULL, NULL);
 	return 0;
 }
 

@@ -90,8 +90,11 @@ __sysconf (int name)
       //important to set default number of threads
 //      DEBUG("unknown but possibly related to number of cpu %d\n", name);    
 //      return (long) nk_get_num_cpus();
+     case 30:
+     return 4096; 
+     break;
     default:
-      DEBUG("name %d\n", name);
+      DEBUG("name %0x\n", name);
       return 0;
 
 

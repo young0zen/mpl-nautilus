@@ -843,13 +843,26 @@ int getrlimit(int resource, struct rlimit *rlim)
     return 0;
 }
 
+ssize_t write(int fd, const void *buf, size_t count) {
+	if (fd != 0 && fd != 1) { BOGUS(); }
+	printk("\n %s", (char *)buf);
+	return count;
+}
 
+//size_t write (const void *ptr, size_t size, size_t nmemb, FILE *f)
+//{
+//    
+//    if (f!=stderr && f!=stdout) { BOGUS(); }
+//    printk("\n %s",ptr); 
+//    //UNDEF_FUN_ERR();
+//    return (int)size;
+//}
 
 /* became lazy... */
 GEN_UNDEF(int,writev,0)
 GEN_UNDEF(int,ungetwc,0)
 GEN_UNDEF(int,__errno_location,0)
-GEN_UNDEF(int,write,0)
+//GEN_UNDEF(int,write,0)
 GEN_UNDEF(int,wcrtomb,0)
 GEN_UNDEF(int,mbrtowc,0)
 //GEN_UNDEF(int,getc,0)
